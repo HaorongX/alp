@@ -11,7 +11,7 @@ if __name__ == "__main__":
     for i in range(1, len(reader.pages)): # Skip information page
         page = reader.pages[i]
         text = page.extract_text()
-        if text.find("GENERIC MARKING PRINCIPLE") == -1:
+        if text.find("GENERIC MARKING PRINCIPLE") == -1 and text.find("Mark scheme abbreviations") == -1:
             p = reader.pages[i]
             output.add_page(p)
     reader.close()

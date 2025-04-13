@@ -2,14 +2,15 @@ from pdf2image import convert_from_path
 from alive_progress import alive_bar
 import numpy as np
 import cv2
-from pytesseract import image_to_data, Output
+from pytesseract import image_to_string
 import re
-from toolbox import crop, crop_white_margin
+from toolbox import crop_white_margin
 import sys
 import os
+import random
 
 def preprocessing(pdf_path):
-    raw_images = convert_from_path(pdf_path, 300) # Specify image quality
+    raw_images = convert_from_path(pdf_path, 300) # Specify image quality, must not be changed
     images = []
     print("Pre - processing...")
     with alive_bar(len(raw_images)) as bar:
@@ -19,58 +20,60 @@ def preprocessing(pdf_path):
     del raw_images
     return images
 
-def get(image):
-    data = image_to_data(cv2.cvtColor(image, cv2.COLOR_BGR2GRAY), output_type = Output.DICT, lang='eng', config='--psm 6')
-    question_coords = []
-    question_regex = r"^\d{1,2}(\([a-z]\))?(\((i{1,3}|iv|v|vi|vii|viii|ix|x|xi)\))?$"
-    MAX_X = image.shape[1]
-    min_left = MAX_X
-    for i in range(len(data['text'])):
-        word = data['text'][i].strip()
-        if re.match(question_regex, word):
-            top, left = data['top'][i], data['left'][i]
-            if left < min_left:
-                min_left = left
-            question_coords.append((top, left, word))
-    results = []
-    print(data)
-    for i in question_coords:
-        if not (i[1] > (min_left + 50)):
-            results.append(i)
-        else:
-            print("abandon", i[2], i[1], min_left + 50, i[1] > (min_left + 50))
-    del question_coords
-    print(results)
-    return results
+def get_left_margin(image):
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    global THE_COLUMN
+    global L_MARGIN
+    THE_STARTING_Y = 270
+    for i in range(0, image.shape[1]):
+        if image[THE_STARTING_Y + 20][i] != 255:
+            L_MARGIN = i
+            break
+    THE_COLUMN = L_MARGIN + 7
 
-def process(image, data):
+def next_black_bondary(image, y):
+    for i in range(y, image.shape[0]):
+        if not image[i][THE_COLUMN] == 255:
+            return i
+    return -1
+
+def get(image):
+    THE_STARTING_Y = 270
+    OFFSET = 55
+    PROBLEM_WIDTH = 260
     MAX_Y = image.shape[0]
-    ms = []
-    for i in data:
-        top, left, word = i[0], i[1], i[2]
-        images = [image]
-        bottom = top + 50
-        while image[bottom, left][0] == 255 and image[bottom, left][1] == 255 and image[bottom, left][2] == 255 and bottom < MAX_Y:
-            bottom += 1
-        if str(word).find('(') == -1:
-            word = str(word) + '(a)'
-        ms.append((word, crop(images, 0, max(0, top - 10), 0, min(MAX_Y - 1, bottom))))
-    return ms 
+    MAX_X = image.shape[1]
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    _, thresh = cv2.threshold(image, 170, 255, cv2.THRESH_BINARY)
+    image = thresh
+    first = next_black_bondary(image, THE_STARTING_Y)
+    second = next_black_bondary(image, first + 3)
+    sections = []
+    while second != -1:
+        section = image[min(first + 3, MAX_Y) : min(first + 90, MAX_Y), L_MARGIN + 3 : L_MARGIN + PROBLEM_WIDTH]
+        text = image_to_string(section, config='--psm 7 -c tessedit_char_blacklist=A').strip() # The image contains of a single line of text
+        if re.search(r"^\d{1,2}(\([a-z]\))?(\((i{1,3}|iv|v|vi|vii|viii|ix|x|xi)\))?$", text) != None:
+            if len(text) <= 2:
+                text += "(a)"
+            sections.append((text, image[first : second, 0 : MAX_X]))
+        first = second
+        second = next_black_bondary(image, first + OFFSET)
+    return sections
 
 if __name__ == "__main__":
     images = preprocessing(sys.argv[1])
     ms_name = re.search(r"9618_[sw]\d{2}_ms_\d{2}", sys.argv[1]).group(0)
     if not os.path.exists(ms_name):
         os.makedirs(ms_name)
+    get_left_margin(images[0])
     ms_raw = []
     print("Splitting...")
     with alive_bar(len(images)) as bar:
-        for i in range(len(images)):
-            ms_raw += process(images[i], get(images[i]))
+        for i in images:
+            ms_raw += get(i)
             bar()
-    ms = []    
-    i = 0
 
+    i = 0
     while i < len(ms_raw):
         index = re.search(r"^\d{1,2}(\([a-z]\))", ms_raw[i][0]).group()
         image = ms_raw[i][1]
