@@ -4,17 +4,19 @@ from pypdf import PdfReader, PdfWriter
 from pdf2image import convert_from_path
 import numpy as np
 
-def cover_pdf_area_withmargin(input_pdf, output_pdf):
-    bar_code = [30, 20, 250, 70]
-    block1 = [542, 38, 560, 55]
-    block2 = [490, 798, 562, 823]
-    block3 = [34, 799, 105, 822]
-    qr_code = [170, 805, 187, 824]
-    info = [269, 808, 326, 818]
+# -10
+
+def cover_pdf_area_withmargin(input_pdf, output_pdf, offset):
+    bar_code = [30, 20 + offset, 250, 70 + offset]
+    block1 = [542, 38 + offset, 560, 55 + offset]
+    block2 = [490, 798 + offset, 562, 823 + offset]
+    block3 = [34, 799 + offset, 105, 822 + offset]
+    qr_code = [170, 805 + offset, 187, 824 + offset]
+    info = [269, 808 + offset, 326, 818 + offset]
     margin1 = [574, 0, 596, 842]
     margin2 = [0, 0, 21, 847]
-    copy_right = [30, 700, 564, 827]
-    page_index = [284, 34, 324, 60]
+    copy_right = [30, 700 + offset, 564, 827 + offset]
+    page_index = [284, 34 + offset, 324, 60 + offset]
     pdf_document = fitz.open(input_pdf)
     for i in range(0, pdf_document.page_count):
         page = pdf_document.load_page(i)
@@ -53,7 +55,10 @@ if __name__ == "__main__":
 
     if with_margin(page0):
         print("with margin!")
-        cover_pdf_area_withmargin(sys.argv[1], sys.argv[1].replace('.pdf', '_processed.pdf'))
+        if sys.argv[1].find("w24") != -1:
+            cover_pdf_area_withmargin(sys.argv[1], sys.argv[1].replace('.pdf', '_processed.pdf'), -10)
+        else:
+            cover_pdf_area_withmargin(sys.argv[1], sys.argv[1].replace('.pdf', '_processed.pdf'))
     else:
         print("no margin")
         cover_pdf_area_withoutmargin(sys.argv[1], sys.argv[1].replace('.pdf', '_processed.pdf'))
@@ -71,6 +76,3 @@ if __name__ == "__main__":
     
     with open(sys.argv[1].replace('.pdf', '_processed.pdf'), 'wb') as f:
         output.write(f)
-
-# TODO
-# Something is wrong with the w24 series, the displacement is incorrect so must be handled separately
