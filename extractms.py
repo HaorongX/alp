@@ -7,7 +7,6 @@ import re
 from toolbox import crop_white_margin
 import sys
 import os
-import random
 
 def preprocessing(pdf_path):
     raw_images = convert_from_path(pdf_path, 300) # Specify image quality, must not be changed
@@ -24,7 +23,7 @@ def get_left_margin(image):
     image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     global THE_COLUMN
     global L_MARGIN
-    THE_STARTING_Y = 270
+    THE_STARTING_Y = 300
     for i in range(0, image.shape[1]):
         if image[THE_STARTING_Y + 20][i] != 255:
             L_MARGIN = i
@@ -38,24 +37,42 @@ def next_black_bondary(image, y):
     return -1
 
 def get(image):
+    original = image
     THE_STARTING_Y = 270
     OFFSET = 55
-    PROBLEM_WIDTH = 260
+    PROBLEM_WIDTH = 250
     MAX_Y = image.shape[0]
     MAX_X = image.shape[1]
     image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    _, thresh = cv2.threshold(image, 170, 255, cv2.THRESH_BINARY)
-    image = thresh
+    kernel = np.ones((1, 1), np.uint8)
+    eroded1 = cv2.erode(image, kernel, iterations=1)
+    doubled = np.clip(eroded1.astype(np.uint16) * 2, 0, 255).astype(np.uint8)
+    eroded2 = cv2.erode(doubled, kernel, iterations=1)
+    image = (eroded2 // 2).astype(np.uint8)
+
+    _, image = cv2.threshold(image, 100, 255, cv2.THRESH_BINARY)
     first = next_black_bondary(image, THE_STARTING_Y)
     second = next_black_bondary(image, first + 3)
     sections = []
     while second != -1:
         section = image[min(first + 3, MAX_Y) : min(first + 90, MAX_Y), L_MARGIN + 3 : L_MARGIN + PROBLEM_WIDTH]
-        text = image_to_string(section, config='--psm 7 -c tessedit_char_blacklist=A').strip() # The image contains of a single line of text
+        if cv2.countNonZero(255 - section) < 200:
+            first = second
+            second = next_black_bondary(image, first + OFFSET)
+            continue
+        text = image_to_string(section, config='--psm 7 -c load_system_dawg=0 -c load_freq_dawg=0').strip().lower() # The image contains of a single line of text
         if re.search(r"^\d{1,2}(\([a-z]\))?(\((i{1,3}|iv|v|vi|vii|viii|ix|x|xi)\))?$", text) != None:
             if len(text) <= 2:
                 text += "(a)"
-            sections.append((text, image[first : second, 0 : MAX_X]))
+            sections.append((text, original[first : second, 0 : MAX_X]))
+        elif text != "" and text != "question":
+            print("Unrecognized text:", text)
+            cv2.imwrite("section.png", section)
+            text = input("Please check the image, and input the question number if it is a question (left blank if it is not): ")
+            if text != "":
+                if len(text) <= 2:
+                    text += "(a)"
+                sections.append((text, original[first : second, 0 : MAX_X]))
         first = second
         second = next_black_bondary(image, first + OFFSET)
     return sections
@@ -68,10 +85,10 @@ if __name__ == "__main__":
     get_left_margin(images[0])
     ms_raw = []
     print("Splitting...")
-    with alive_bar(len(images)) as bar:
-        for i in images:
-            ms_raw += get(i)
-            bar()
+    # with alive_bar(len(images)) as bar:
+    for i in images:
+        ms_raw += get(i)
+            # bar()
 
     i = 0
     while i < len(ms_raw):

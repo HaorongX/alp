@@ -53,15 +53,15 @@ def clear_cache():
     global cache_to_binary
     cache_to_binary = {}
 
-def crop_white_margin(image): # This function removes white margins on the left and right side for a gray scale image
+def crop_white_margin(image): # This function removes white margins on the left and right side
     left = 0
     right = image.shape[1] - 1
     for i in range(image.shape[1]):
-            if not (image[0, i] == 255):
+            if not (image[0, i].all() == 255):
                 left = i
                 break
     for i in reversed(range(image.shape[1])):
-            if not (image[0, i] == 255):
+            if not (image[0, i].all() == 255):
                 right = i
                 break
     return image[0: image.shape[0], left : right + 1]
