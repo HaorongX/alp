@@ -1,18 +1,74 @@
-import json
+import re
 import cv2
-import numpy as np
 from pytesseract import image_to_string
+import json
 import sys
+import os
+import sqlite3
+
+keywords = json.load(open('9618_keywords.json'))
+TOPICS = {}
+for i in keywords.keys():
+    TOPICS[i] = []
+    for j in keywords[i].keys():
+        for k in keywords[i][j]:
+            TOPICS[i].append(k)
+
+def get_ocr_text(image):
+    custom_config = r'--oem 3 --psm 6'
+    return image_to_string(image, lang = 'eng', config = custom_config).strip().lower()
+
+def choose_topic():
+    print("\nAvailable Topics:")
+    topic_list = list(TOPICS.keys())
+    for i, topic in enumerate(topic_list):
+        print(f"{i+1}. {topic}")
+    
+    topic_idx = int(input("Choose a topic (number): ")) - 1
+    topic = topic_list[topic_idx]
+
+    print(f"\nAvailable Subtopics for {topic}:")
+    subtopics = TOPICS[topic]
+    for j, sub in enumerate(subtopics):
+        print(f"{j+1}. {sub}")
+    
+    subtopic_idx = int(input("Choose a subtopic (number) (type -1 to choose another topic): ")) - 1
+    if subtopic_idx == -2:
+        return choose_topic()
+    subtopic = subtopics[subtopic_idx]
+
+    return topic, subtopic
+
+def label_dataset(image_dir, connect, cursor):
+    qp_name = re.search(r"9618_[sw]\d{2}_qp_\d{2}", sys.argv[1]).group(0)
+    for root, _, files in os.walk(image_dir):
+        for file in files:
+            filepath = os.path.join(root, file)
+
+            image = cv2.imread(filepath)
+            question = get_ocr_text(image)
+
+            found = False
+            for i in keywords.keys():
+                for j in keywords[i].keys():
+                    for k in keywords[i][j]:
+                        for keyword in keywords[i][j][k]:
+                            if question.find(keyword.lower()) != -1:
+                                topic = i
+                                subtopic = k
+                                found = True
+                                break
+            if not found:
+                print(f"\nLabeling: {filepath}")
+                cv2.imwrite("current.png", image)
+                topic, subtopic = choose_topic()
+            topic_id = cursor.execute("SELECT topic_id FROM TOPICS WHERE main_topic_name = ? AND sub_topic_name = ?", (topic, subtopic)).fetchone()[0]
+            question_id = cursor.execute("SELECT question_id FROM QUESTIONS WHERE paper_id = ? AND primary_index = ? AND secondary_index = ?", (qp_name, file[:-4].split('_')[0], file[:-4].split('_')[1])).fetchone()[0]
+            cursor.execute("INSERT INTO QUESTIONTOPICS (question_id, topic_id) VALUES (?, ?)", (question_id, topic_id))
 
 if __name__ == "__main__":
-    keywords = json.load(open("keywords.json", "r"))
-    image = cv2.imread(sys.argv[1])
-    content = image_to_string(image, lang='eng', config='--psm 6').lower()
-    ans = []
-    for i in keywords.keys():
-        for j in keywords[i]:
-            if content.find(j) != -1:
-                print(f"Found keyword: {j}")
-                ans.append(i)
-                break
-    print(ans)
+    connect = sqlite3.connect("db/9618.db")
+    cursor = connect.cursor()
+    image_dir = sys.argv[1]
+    label_dataset(image_dir, connect, cursor)
+    connect.commit()

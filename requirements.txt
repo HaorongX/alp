@@ -1,0 +1,6 @@
+opencv-python
+pdf2image
+pytesseract
+alive-progress
+numpy
+pillow

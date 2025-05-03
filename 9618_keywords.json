@@ -1,0 +1,368 @@
+{
+  "Data Representation": {
+    "AS_Level": {
+      "1.1 Data Representation": [
+        "complement",
+        "ASCII",
+        "Unicode",
+        "character set",
+        "binary",
+        "BCD",
+        "hexadecimal addition",
+        "binary addition",
+        "overflow",
+        "bibyte"
+      ],
+      "1.2 Multimedia, Graphics, Sound": [
+        "vector graphic",
+        "header",
+        "sampling rate",
+        "sampling resolution",
+        "bit depth",
+        "pixel",
+        "bitmap",
+        "audio",
+        "image",
+        "video"
+      ],
+      "1.3 Compression": [
+        "compress",
+        "lossless",
+        "lossy"
+      ]
+    },
+    "A_Level": {
+      "13.1 User-defined Data Types": [
+        "enumerate",
+        "pointer type",
+        "object-oriented class",
+        "composite type",
+        "user-defined data type"
+      ],
+      "13.2 File Organisation and Access": [
+        "sequential file access",
+        "hashing algorithm for file access"
+      ],
+      "13.3 Floating-point Numbers": [
+        "floating-point normalisation",
+        "mantissa and exponent"
+      ]
+    }
+  },
+  "Communication and Internet Technologies": {
+    "AS_Level": {
+      "2.1 Networks including the internet": [
+        "CSMA",
+        "bit streaming",
+        "thin-client",
+        "thick-client",
+        "star topology",
+        "mesh topology",
+        "LAN",
+        "WAN",
+        "peer-to-peer",
+        "cloud",
+        "client-server",
+        "cable",
+        "wireless",
+        "mac address"
+      ]
+    },
+    "A_Level": {
+      "14.1 Protocols": [
+        "TCP/IP",
+        "HTTP",
+        "POP3",
+        "BitTorrent"
+      ],
+      "14.2 Circuit Switching and Packet Switching": [
+        "circuit switching",
+        "packet switching"
+      ]
+    }
+  },
+  "Computer Architecture and Hardware": {
+    "AS_Level": {
+      "3.1 Computers and their components": [
+        "sensor",
+        "embedded",
+        "microcontroller",
+        "microprocessor",
+        "DRAM",
+        "SRAM",
+        "ROM",
+        "EPROM",
+        "EEPROM",
+        "hard disk",
+        "touchscreen",
+        "microphone"
+      ],
+      "3.2 Logic Gates and Logic Circuits": [
+        "truth table",
+        "NAND gate",
+        "NOR gate",
+        "XOR gate",
+        "logic circuit",
+        "logic gate"
+      ]
+    },
+    "A_Level": {
+      "15.1 Processors, Parallel Processing and Virtual Machines": [
+        "SISD",
+        "SIMD",
+        "MISD",
+        "MIMD",
+        "massively parallel processing"
+      ],
+      "15.2 Boolean Algebra and Logic Circuits": [
+        "Morgan",
+        "Karnaugh map",
+        "flip-flop JK",
+        "half adder",
+        "full adder",
+        "K-map"
+      ]
+    }
+  },
+  "Processor Fundamentals": {
+    "AS_Level": {
+      "4.1 Central Processing Unit (CPU) Architecture": [
+        "fetch",
+        "Neumann",
+        "register",
+        "RTN",
+        "clock speed",
+        "F-E cycle"
+      ],
+      "4.2 Assembly Language": [
+        "two-pass assembler",
+        "addressing",
+        "assembler",
+        "instruction set",
+        "opcode",
+        "operand"
+      ],
+      "4.3 Bit manipulation": [
+        "bitwise",
+        "shift left",
+        "shift right"
+      ]
+    }
+  },
+  "System Software": {
+    "AS_Level": {
+      "5.1 Operating Systems": [
+        "disk formatter",
+        "virus checker",
+        "defragmentation software",
+        "disk contents analysis",
+        "file compression",
+        "disk repair software",
+        "back-up software",
+        "program libraries",
+        "program library",
+        "linker",
+        "library files",
+        "dll",
+        "management tasks"
+      ],
+      "5.2 Language Translators": [
+        "interpreter",
+        "compiler",
+        "dynamic syntax check",
+        "prettyprint",
+        "single stepping",
+        "breakpoint",
+        "report window"
+      ]
+    },
+    "A_Level": {
+      "16.1 Purposes of an Operating System (OS)": [
+        "multi-tasking",
+        "scheduling routine",
+        "round robin",
+        "shortest job first",
+        "first come first served",
+        "shortest remaining time"
+      ],
+      "16.2 Translation Software": [
+        "lexical analysis",
+        "syntax analysis",
+        "Backus-Naur Form",
+        "BNF notation",
+        "Reverse Polish Notation",
+        "RPN",
+        "syntax diagram"
+      ]
+    }
+  },
+  "Security and Privacy": {
+    "AS_Level": {
+      "6.1 Data Security": [
+        "firewall",
+        "data security",
+        "anti-virus software",
+        "malware",
+        "spyware"
+      ],
+      "6.2 Data Integrity": [
+        "data integrity",
+        "parity check",
+        "checksum",
+        "double entry",
+        "validation",
+        "verification",
+        "error check"
+      ]
+    },
+    "A_Level": {
+      "17.1 Encryption, Encryption Protocols and Digital Certificates": [
+        "TLS",
+        "SSL",
+        "digital certificate",
+        "cryptography"
+      ]
+    }
+  },
+  "Ethics and Ownership": {
+    "AS_Level": {
+      "7.1 Ethics and Ownership": [
+        "Free Software Foundation",
+        "Open Source Initiative",
+        "ethical",
+        "ethics",
+        "shareware",
+        "commercial software",
+        "license",
+        "open Source"
+      ]
+    }
+  },
+  "Databases": {
+    "AS_Level": {
+      "8.1 Database Concepts": [
+        "1NF",
+        "2NF",
+        "3NF",
+        "normal form",
+        "normalisation",
+        "file-based",
+        "foreign key",
+        "candidate key",
+        "entity-relationship"
+      ],
+      "8.2 Database Management Systems (DBMS)": [
+        "DBMS",
+        "developer interface",
+        "query process",
+        "authentication",
+        "data dict"
+      ],
+      "8.3 Data Definition Language (DDL) and Data Manipulation Language (DML)": [
+        "CREATE TABLE",
+        "PRIMARY KEY",
+        "FOREIGN KEY",
+        "SQL"
+      ]
+    }
+  },
+  "Algorithm Design and Computational Thinking": {
+    "AS_Level": {
+      "9.1 Computational Thinking Skills": [
+        "abstraction",
+        "decomposition"
+      ],
+      "9.2 Algorithms": [
+        "flowchart",
+        "stepwise refinement",
+        "test data",
+        "dry run",
+        "trace table",
+        "algorithm",
+        "identifier table"
+      ]
+    },
+    "A_Level": {
+      "19.1 Algorithms": [
+        "binary search",
+        "insertion sort",
+        "ADT"
+      ],
+      "19.2 Recursion": [
+        "recursion",
+        "recursive"
+      ]
+    }
+  },
+  "Data Types and Structures": {
+    "AS_Level": {
+      "10.1 Data Types and Records": [
+        "a suitable structure for storing"
+      ],
+      "10.2 Arrays": [],
+      "10.3 Files": [],
+      "10.4 Introduction to Abstract Data Types (ADT)": [
+        "stack overflow",
+        "queue underflow",
+        "linked list"
+      ]
+    }
+  },
+  "Programming": {
+    "AS_Level": {
+      "11.1 Pseudocode": [
+        "write pseudocode for",
+        "Write efficient pseudocode for",
+        "loop structure",
+        "write pseudocode",
+        "describe the error in"
+      ],
+      "11.2 Flowcharts": [
+        "draw a program flowchart",
+        "draw a flowchart"
+      ]
+    },
+    "A_Level": {}
+  },
+  "Software Development": {
+    "AS_Level": {
+      "12.1 Program Development Life Cycle": [
+        "development life cycle",
+        "waterfall",
+        "rapid application development",
+        "RAD"
+      ],
+      "12.2 Program Design": [
+        "structure chart",
+        "state-transition"
+      ],
+      "12.3 Program Testing and Maintenance": [
+        "alpha test",
+        "beta test",
+        "stub test",
+        "white-box test",
+        "method of testing",
+        "integration test"
+      ]
+    },
+    "A_Level":{
+      "20.1 Programming Paradigms": [
+        "inheritance"
+      ],
+      "20.2 File Processing and Exception Handling": [
+        "exception"
+      ]
+    }
+  },
+  "Artificial Intelligence": {
+    "A_Level": {
+      "18.1 Artificial Intelligence": [
+        "A*",
+        "Dijkstra",
+        "neural network",
+        "deep learning",
+        "reinforcement learning"
+      ]
+    }
+  }
+}
