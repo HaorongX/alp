@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Create Test</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #3498db;
+      --secondary-color: #2ecc71;
+      --accent-color: #f39c12;
+      --light-bg: #f8f9fa;
+      --dark-text: #2c3e50;
+      --light-text: #ecf0f1;
+      --border-radius: 12px;
+      --box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    body {
+      background-color: var(--light-bg);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: var(--dark-text);
+      padding-bottom: 2rem;
+    }
+    
+    .page-header {
+      background: linear-gradient(135deg, var(--primary-color), #1d6fa5);
+      color: var(--light-text);
+      padding: 1.5rem 0;
+      border-radius: var(--border-radius);
+      margin-bottom: 2rem;
+      box-shadow: var(--box-shadow);
+    }
+    
+    .page-header h1 {
+      margin: 0;
+      font-weight: 600;
+    }
+    
+    .column-container {
+      display: flex;
+      gap: 20px;
+    }
+    
+    .panel {
+      background-color: white;
+      border-radius: var(--border-radius);
+      padding: 1.5rem;
+      box-shadow: var(--box-shadow);
+      height: 75vh;
+      overflow-y: auto;
+      flex: 1;
+      transition: all 0.3s ease;
+    }
+    
+    .panel-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    
+    .panel-header i {
+      margin-right: 0.5rem;
+      color: var(--primary-color);
+    }
+    
+    .panel-header h5 {
+      margin: 0;
+      font-weight: 600;
+    }
+    
+    .accordion-button:not(.collapsed) {
+      background-color: rgba(52, 152, 219, 0.1);
+      color: var(--primary-color);
+    }
+    
+    .accordion-button:focus {
+      box-shadow: none;
+      border-color: rgba(52, 152, 219, 0.5);
+    }
+    
+    .accordion-item {
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 0.5rem;
+      border: 1px solid #e0e0e0;
+    }
+    
+    .badge {
+      font-weight: 500;
+      padding: 0.35em 0.65em;
+    }
+    
+    .bg-as {
+      background-color: #3498db;
+      color: white;
+    }
+    
+    .bg-a2 {
+      background-color: #f39c12;
+      color: white;
+    }
+    
+    .topic-link {
+      text-decoration: none;
+      color: var(--dark-text);
+      display: block;
+      padding: 0.5rem 0;
+      transition: all 0.2s ease;
+      border-radius: 6px;
+    }
+    
+    .topic-link:hover {
+      background-color: rgba(52, 152, 219, 0.1);
+      padding-left: 0.5rem;
+      color: var(--primary-color);
+    }
+    
+    .card {
+      border-radius: 10px;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      margin-bottom: 1.5rem;
+      border: none;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+    }
+    
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+    }
+    
+    .card-img-top {
+      height: 180px;
+      object-fit: contain;
+      background-color: #f8f9fa;
+      border-bottom: 1px solid #eaeaea;
+      cursor: pointer;
+    }
+    
+    .card-body {
+      padding: 1rem;
+    }
+    
+    .card-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      color: var(--dark-text);
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      height: 2.8rem;
+    }
+    
+    .card-footer {
+      background-color: white;
+      border-top: 1px solid #eaeaea;
+      padding: 0.75rem 1rem;
+    }
+    
+    .btn-custom-primary {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-custom-primary:hover {
+      background-color: #2980b9;
+      color: white;
+      transform: translateY(-2px);
+    }
+    
+    .btn-custom-outline {
+      border: 1px solid #e0e0e0;
+      background-color: white;
+      color: var(--dark-text);
+      transition: all 0.3s ease;
+    }
+    
+    .btn-custom-outline:hover {
+      background-color: #f8f9fa;
+      border-color: #d0d0d0;
+    }
+    
+    .btn-custom-danger {
+      background-color: #e74c3c;
+      color: white;
+      border: none;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-custom-danger:hover {
+      background-color: #c0392b;
+    }
+    
+    .selected-question {
+      background-color: white;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+    }
+    
+    .selected-question:hover {
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .selected-thumbnail {
+      width: 80px;
+      height: 60px;
+      object-fit: contain;
+      background-color: #f8f9fa;
+      border-radius: 6px;
+      margin-right: 1rem;
+      cursor: pointer;
+    }
+    
+    .selected-question-info {
+      flex-grow: 1;
+    }
+    
+    .selected-question-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    
+    .selected-question-id {
+      font-size: 0.75rem;
+      color: #777;
+    }
+    
+    .selected-question-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+    
+    .modal-content {
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    
+    .modal-header {
+      border-bottom: none;
+      padding: 1.5rem 1.5rem 0.5rem;
+    }
+    
+    .modal-title {
+      font-weight: 600;
+      color: var(--dark-text);
+    }
+    
+    .modal-body {
+      padding: 1rem 1.5rem;
+    }
+    
+    .modal-footer {
+      border-top: none;
+      padding: 0.5rem 1.5rem 1.5rem;
+    }
+    
+    .modal-img {
+      width: 100%;
+      max-height: 70vh;
+      object-fit: contain;
+      border-radius: 8px;
+      background-color: #f8f9fa;
+    }
+    
+    .modal-description {
+      margin-top: 1rem;
+      padding: 1rem;
+      background-color: #f8f9fa;
+      border-radius: 8px;
+      font-size: 0.9rem;
+    }
+    
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 1rem;
+      text-align: center;
+      color: #6c757d;
+    }
+    
+    .empty-state i {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+    
+    .empty-state p {
+      font-size: 1rem;
+      max-width: 300px;
+      margin: 0 auto;
+    }
+    
+    .finalizing-section {
+      background-color: #f8fafd;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-top: 1rem;
+    }
+    
+    .test-info {
+      margin-bottom: 1rem;
+    }
+    
+    .test-info label {
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-bottom: 0.25rem;
+    }
+    
+    .animated-badge {
+      display: inline-block;
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.05);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+    
+    /* Scrollbar styling */
+    .panel::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    .panel::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 10px;
+    }
+    
+    .panel::-webkit-scrollbar-thumb {
+      background: #c1c1c1;
+      border-radius: 10px;
+    }
+    
+    .panel::-webkit-scrollbar-thumb:hover {
+      background: #a1a1a1;
+    }
+    
+    /* Loading spinner */
+    .spinner-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100px;
+    }
+    
+    .spinner-border {
+      color: var(--primary-color);
+    }
+  </style>
+</head>
+<body>
+  <div class="container py-4">
+    <!-- Page Header -->
+    <div class="page-header text-center mb-4">
+      <h1><i class="fas fa-flask"></i> Create Your Test</h1>
+      <p class="mt-2 mb-0">Select topics, add questions, build your perfect assessment</p>
+    </div>
+
+    <!-- Three-column layout -->
+    <div class="column-container">
+      <!-- Left Column: Topics/Sub-topics -->
+      <div class="panel" style="flex: 0 0 25%;">
+        <div class="panel-header">
+          <i class="fas fa-book"></i>
+          <h5>Topics</h5>
+        </div>
+        <div class="accordion" id="syllabusAccordion">
+          {% for topic, subs in syllabus.items() %}
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="heading{{ loop.index }}">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                      data-bs-target="#collapse{{ loop.index }}" aria-expanded="false"
+                      aria-controls="collapse{{ loop.index }}">
+                {{ topic }}
+              </button>
+            </h2>
+            <div id="collapse{{ loop.index }}" class="accordion-collapse collapse"
+                aria-labelledby="heading{{ loop.index }}" data-bs-parent="#syllabusAccordion">
+              <div class="accordion-body p-0">
+                <ul class="list-unstyled mb-0">
+                  {% for sub in subs %}
+                  <li>
+                    <a href="javascript:void(0);" onclick="loadQuestions('{{ sub.id }}')" class="topic-link px-3">
+                      <span class="badge {% if sub.level == 'AS' %}bg-as{% else %}bg-a2{% endif %} me-2">
+                        {{ sub.level }}
+                      </span>
+                      {{ sub.name }}
+                    </a>
+                  </li>
+                  {% endfor %}
+                </ul>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>      
+
+      <!-- Middle Column: Question Images -->
+      <div class="panel" style="flex: 0 0 40%;">
+        <div class="panel-header">
+          <i class="fas fa-question-circle"></i>
+          <h5>Available Questions</h5>
+        </div>
+        <div id="question-list">
+          <div class="empty-state">
+            <i class="fas fa-hand-point-left"></i>
+            <p>Select a subtopic from the left panel to load questions</p>
+          </div>
+        </div>      
+      </div>
+
+      <!-- Right Column: Selected Questions -->
+      <div class="panel" style="flex: 0 0 35%;">
+        <div class="panel-header">
+          <i class="fas fa-check-circle"></i>
+          <h5>Selected Questions <span id="selectedCount" class="badge bg-primary ms-2">0</span></h5>
+        </div>
+        <div id="selectedQuestions">
+          <div class="empty-state">
+            <i class="fas fa-plus-circle"></i>
+            <p>Add questions to your test by clicking "Add to Test" on the available questions</p>
+          </div>
+        </div>
+        
+        <div class="finalizing-section mt-3">
+          <form method="post" action="{{ url_for('submit_test') }}" id="testForm">
+            <input type="hidden" name="question_ids" id="questionIds">
+            
+            <div class="test-info">
+              <label for="testTitle">Test Title</label>
+              <input type="text" class="form-control" id="testTitle" name="title" placeholder="Enter test title" required>
+            </div>
+            
+            <div class="test-info">
+              <label for="testDescription">Description (Optional)</label>
+              <textarea class="form-control" id="testDescription" name="description" rows="2" placeholder="Add brief description"></textarea>
+            </div>
+            
+            <button type="submit" class="btn btn-custom-primary w-100 mt-3" id="finalizeBtn" disabled>
+              <i class="fas fa-check-double me-2"></i> Finalize Test
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal for Preview -->
+  <div class="modal fade" id="previewModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="previewTitle">Question Preview</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <img id="previewImage" class="modal-img" src="" alt="Preview">
+          <div class="modal-description" id="previewDescription"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-custom-outline" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-custom-primary" id="addToTestBtn">Add to Test</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Store selected questions with more comprehensive data
+    const selected = new Map();
+    let currentQuestions = [];
+    let currentPreviewQuestion = null;
+    
+    // Initialize event listeners
+    document.addEventListener('DOMContentLoaded', function() {
+      // Test form validation
+      document.getElementById('testForm').addEventListener('submit', function(e) {
+        if (selected.size === 0) {
+          e.preventDefault();
+          alert('Please select at least one question for your test.');
+        }
+      });
+      
+      // Enable/disable finalize button based on selection
+      updateFinalizeButton();
+    });
+    
+    function updateSelectedCount() {
+      const countElement = document.getElementById('selectedCount');
+      countElement.textContent = selected.size;
+      
+      // Add animation class if count changes
+      countElement.classList.add('animated-badge');
+      setTimeout(() => {
+        countElement.classList.remove('animated-badge');
+      }, 1000);
+    }
+    
+    function updateFinalizeButton() {
+      const finalizeBtn = document.getElementById('finalizeBtn');
+      finalizeBtn.disabled = selected.size === 0;
+    }
+    
+    function addToTest(id) {
+      if (selected.has(id)) return;
+      
+      // Find the question data from current questions
+      const questionData = currentQuestions.find(q => q.id == id);
+      if (!questionData) return;
+      
+      // Add to selected map
+      selected.set(id, questionData);
+      
+      // Update UI
+      refreshSelectedQuestions();
+      updateSelectedCount();
+      updateFinalizeButton();
+      updateHiddenField();
+    }
+    
+    function removeFromTest(id) {
+      if (!selected.has(id)) return;
+      
+      selected.delete(id);
+      
+      // Update UI
+      refreshSelectedQuestions();
+      updateSelectedCount();
+      updateFinalizeButton();
+      updateHiddenField();
+    }
+    
+    function refreshSelectedQuestions() {
+      const container = document.getElementById('selectedQuestions');
+      
+      // If no questions selected, show empty state
+      if (selected.size === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <i class="fas fa-plus-circle"></i>
+            <p>Add questions to your test by clicking "Add to Test" on the available questions</p>
+          </div>
+        `;
+        return;
+      }
+      
+      // Clear existing content
+      container.innerHTML = '';
+      
+      // Add each selected question
+      selected.forEach((question, id) => {
+        const div = document.createElement('div');
+        div.className = 'selected-question';
+        
+        div.innerHTML = `
+          <img src="${question.image_url}" class="selected-thumbnail" onclick="showPreview('${id}')">
+          <div class="selected-question-info">
+            <div class="selected-question-title">${question.description || 'Question ' + id}</div>
+            <div class="selected-question-id">ID: ${id}</div>
+          </div>
+          <div class="selected-question-actions">
+            <button class="btn btn-sm btn-custom-outline" onclick="showPreview('${id}')">
+              <i class="fas fa-eye"></i>
+            </button>
+            <button class="btn btn-sm btn-custom-danger" onclick="removeFromTest('${id}')">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        `;
+        
+        container.appendChild(div);
+      });
+    }
+    
+    function updateHiddenField() {
+      document.getElementById('questionIds').value = Array.from(selected.keys()).join(',');
+    }
+    
+    function showPreview(questionId, addButton = false) {
+      // Get the question data
+      let question;
+      
+      // Check if it's from selected questions
+      if (selected.has(questionId)) {
+        question = selected.get(questionId);
+      } else {
+        // Check if it's from current questions
+        question = currentQuestions.find(q => q.id == questionId);
+      }
+      
+      if (!question) return;
+      
+      // Set current preview question for the "Add to Test" button
+      currentPreviewQuestion = question;
+      
+      // Update modal elements
+      document.getElementById('previewImage').src = question.image_url;
+      document.getElementById('previewTitle').textContent = `Question ${questionId}`;
+      
+      // Set the description
+      const descriptionElement = document.getElementById('previewDescription');
+      if (question.description) {
+        descriptionElement.textContent = question.description;
+        descriptionElement.style.display = 'block';
+      } else {
+        descriptionElement.style.display = 'none';
+      }
+      
+      // Show/hide the "Add to Test" button based on whether it's already selected
+      const addToTestBtn = document.getElementById('addToTestBtn');
+      if (selected.has(questionId)) {
+        addToTestBtn.textContent = 'Already Added';
+        addToTestBtn.disabled = true;
+      } else {
+        addToTestBtn.textContent = 'Add to Test';
+        addToTestBtn.disabled = false;
+        addToTestBtn.onclick = () => {
+          addToTest(questionId);
+          bootstrap.Modal.getInstance(document.getElementById('previewModal')).hide();
+        };
+      }
+      
+      // Show the modal
+      new bootstrap.Modal(document.getElementById('previewModal')).show();
+    }
+    
+    function loadQuestions(subtopicId) {
+      const container = document.getElementById('question-list');
+      
+      // Show loading spinner
+      container.innerHTML = `
+        <div class="spinner-container">
+          <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      `;
+      
+      fetch(`/get_questions?subtopic_id=${subtopicId}`)
+        .then(response => response.json())
+        .then(data => {
+          // Store current questions for reference
+          currentQuestions = data.questions;
+          
+          // Clear and rebuild the UI
+          container.innerHTML = '';
+          
+          if (data.questions.length === 0) {
+            container.innerHTML = `
+              <div class="empty-state">
+                <i class="fas fa-exclamation-circle"></i>
+                <p>No questions found for this subtopic</p>
+              </div>
+            `;
+            return;
+          }
+          
+          const row = document.createElement('div');
+          row.className = 'row g-3';
+          
+          data.questions.forEach(q => {
+            const col = document.createElement('div');
+            col.className = 'col-md-6';
+            
+            const isSelected = selected.has(q.id);
+            
+            col.innerHTML = `
+              <div class="card">
+                <img src="${q.image_url}" class="card-img-top" alt="Question ${q.id}" onclick="showPreview('${q.id}', true)">
+                <div class="card-body">
+                  <h6 class="card-title">${q.description || 'Question ' + q.id}</h6>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <span class="badge bg-${q.level === 'AS' ? 'as' : 'a2'}">${q.level}</span>
+                    <button class="btn btn-sm ${isSelected ? 'btn-secondary disabled' : 'btn-custom-primary'}" 
+                            ${isSelected ? 'disabled' : `onclick="addToTest('${q.id}')"`}>
+                      ${isSelected ? 'Added' : 'Add to Test'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            `;
+            
+            row.appendChild(col);
+          });
+          
+          container.appendChild(row);
+        })
+        .catch(error => {
+          console.error('Error loading questions:', error);
+          container.innerHTML = `
+            <div class="empty-state">
+              <i class="fas fa-exclamation-triangle"></i>
+              <p>Error loading questions. Please try again.</p>
+            </div>
+          `;
+        });
+    }
+  </script>
+</body>
+</html>

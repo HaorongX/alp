@@ -4,3 +4,6 @@ pytesseract
 alive-progress
 numpy
 pillow
+flask
+pdfkit
+shutil
