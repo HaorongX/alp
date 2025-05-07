@@ -164,7 +164,23 @@ def submit_test():
 
     return send_file("temp.zip", mimetype='application/zip', as_attachment=True, download_name=f'test.zip')
 
+@app.route('/editpb')
+def edit_pb():
+    global syllabus
+    return render_template("edit_pb.html", syllabus = syllabus)
+
+@app.route('/edit_category', methods = ['POST'])
+def edit_category():
+    db = get_db()
+    cursor = db.cursor()
+
+    args = json.loads(request.data.decode('utf-8'))
+    cursor.execute(f"UPDATE QUESTIONTOPICS SET topic_id = ? WHERE question_id = ?", (args["topicid"], args["qid"]))
+    db.commit()
+    print(f"UPDATE QUESTIONTOPICS SET topic_id = ? WHERE question_id = ?", (args["topicid"], args["qid"]))
+    return jsonify({"Status" : "ok"})
+
 if __name__ == '__main__':
     # Initialize syllabus data before starting the server
     init_syllabus()
-    app.run(debug = False)
+    app.run(debug = True)
