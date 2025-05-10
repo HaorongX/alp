@@ -98,7 +98,7 @@ def get_questions():
 def create_test():
     return render_template('create.html', syllabus=syllabus)
 
-def generate_pdf(images, title, description, filename, indices):
+def generate_pdf(images, title, description, filename, indices, qp = True):
     options = {
         'print-media-type': None,
         'margin-top': '10mm',
@@ -128,11 +128,17 @@ def generate_pdf(images, title, description, filename, indices):
     </body>
     </html>
     """
-    with open('temp.html', 'w', encoding='utf-8') as f:
-        f.write(html_content)
-    pdfkit.from_file('temp.html', filename, options=options)
-    os.remove('temp.html')
+    if qp:
+        with open(f'qp.html', 'w', encoding='utf-8') as f:
+            f.write(html_content)
+            pdfkit.from_file('qp.html', filename, options=options)
+    else:
+        with open(f'ms.html', 'w', encoding='utf-8') as f:
+            f.write(html_content)
+            pdfkit.from_file('ms.html', filename, options=options)
     return filename
+
+
 
 @app.route('/submit_test', methods=['POST'])
 def submit_test():
@@ -156,11 +162,11 @@ def submit_test():
     for i in ids_list:
         cursor.execute("SELECT image FROM MARKSCHEMES WHERE question_id = ?", (i,))
         markschemes.append(cursor.fetchone()[0])
-    generate_pdf(markschemes, title + " Mark Scheme", description, "ms.pdf", indices)
+    generate_pdf(markschemes, title + " Mark Scheme", description, "ms.pdf", indices, False)
     with zipfile.ZipFile(os.path.join(os.getcwd(), 'temp.zip'), 'w') as zipf:
-        for filename in ['qp.pdf', 'ms.pdf']:
+        for filename in ['qp.pdf', 'ms.pdf', 'qp.html', 'ms.html']:
             file_path = os.path.join(os.getcwd(), filename)
-            zipf.write(file_path, arcname=filename)
+            zipf.write(file_path, arcname = filename)
 
     return send_file("temp.zip", mimetype='application/zip', as_attachment=True, download_name=f'test.zip')
 
