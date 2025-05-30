@@ -6,4 +6,4 @@ numpy
 pillow
 flask
 pdfkit
-shutil
+clean-text
