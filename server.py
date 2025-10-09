@@ -138,7 +138,39 @@ def generate_pdf(images, title, description, filename, indices, qp = True):
             pdfkit.from_file('ms.html', filename, options=options)
     return filename
 
+def generate_integrated_pdf(questions, answers, title, description, indices):
+    html_content = open("templates/template_qp.html", "r").read()
+    html_content += f'<div class="title">{title}</div>\n'
+    if description.strip() != '':
+        html_content += f'<div class="description">{description}</div>\n'
+    
+    for i in range(len(questions)):
+        qp_base64_string = base64.b64encode(questions[i]).decode('utf-8')
+        ms_base64_string = base64.b64encode(answers[i]).decode('utf-8')
+        qp_data_url = f"data:image/png;base64,{qp_base64_string}"
+        ms_data_url = f"data:image/png;base64,{ms_base64_string}"
+        html_content += f'''
+        <div class="question">
+            <div class="question-number">({indices[i]}) {i + 1}.</div>
+            <div class="image-container">
+                <img class="question-image" src="{qp_data_url}" alt="Question {i + 1}">
+            </div>
+            <details>
+                <summary>Mark Scheme</summary>
+                <div class="image-container">
+                <img class="question-image" src="{ms_data_url}" alt="Question {i + 1}">
+            </div>
+            </details>
+        </div>
+        '''
+    html_content += """
+    </body>
+    </html>
+    """
 
+    with open(f'integrated.html', 'w', encoding='utf-8') as f:
+        f.write(html_content)
+    return 'integrated.html'
 
 @app.route('/submit_test', methods=['POST'])
 def submit_test():
@@ -158,15 +190,19 @@ def submit_test():
         questions.append(res[0])
         indices.append(res[1] + " Q" + str(res[2]) + "A" + str(res[3]))
     generate_pdf(questions, title, description, "qp.pdf", indices)
+
     markschemes = []
     for i in ids_list:
         cursor.execute("SELECT image FROM MARKSCHEMES WHERE question_id = ?", (i,))
         markschemes.append(cursor.fetchone()[0])
+    
     generate_pdf(markschemes, title + " Mark Scheme", description, "ms.pdf", indices, False)
+    generate_integrated_pdf(questions, markschemes, title, description, indices)
     with zipfile.ZipFile(os.path.join(os.getcwd(), 'temp.zip'), 'w') as zipf:
-        for filename in ['qp.pdf', 'ms.pdf', 'qp.html', 'ms.html']:
+        for filename in ['qp.pdf', 'ms.pdf', 'qp.html', 'ms.html', 'integrated.html']:
             file_path = os.path.join(os.getcwd(), filename)
             zipf.write(file_path, arcname = filename)
+
 
     return send_file("temp.zip", mimetype='application/zip', as_attachment=True, download_name=f'test.zip')
 

@@ -7,3 +7,6 @@ pillow
 flask
 pdfkit
 clean-text
+unidecode
+nltk
+pyspellchecker
