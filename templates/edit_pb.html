@@ -57,9 +57,15 @@
     .panel-header {
       display: flex;
       align-items: center;
+      justify-content: space-between;
       margin-bottom: 1.5rem;
       padding-bottom: 0.75rem;
       border-bottom: 1px solid #e0e0e0;
+    }
+    
+    .panel-header-left {
+      display: flex;
+      align-items: center;
     }
     
     .panel-header i {
@@ -126,11 +132,27 @@
       margin-bottom: 1.5rem;
       border: none;
       box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+      position: relative;
     }
     
     .card:hover {
       transform: translateY(-5px);
       box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+    }
+    
+    .card.selected {
+      border: 3px solid var(--primary-color);
+      box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+    }
+    
+    .card-checkbox {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 10;
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
     }
     
     .card-img-top {
@@ -196,6 +218,18 @@
     
     .btn-custom-danger:hover {
       background-color: #c0392b;
+    }
+
+    .btn-custom-success {
+      background-color: var(--secondary-color);
+      color: white;
+      border: none;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-custom-success:hover {
+      background-color: #27ae60;
+      color: white;
     }
     
     .selected-question {
@@ -308,72 +342,50 @@
       margin: 0 auto;
     }
     
-    .finalizing-section {
-      background-color: #f8fafd;
-      border-radius: 8px;
-      padding: 1rem;
-      margin-top: 1rem;
-    }
-    
-    .test-info {
-      margin-bottom: 1rem;
-    }
-    
-    .test-info label {
-      font-weight: 600;
-      font-size: 0.9rem;
-      margin-bottom: 0.25rem;
-    }
-    
-    .animated-badge {
-      display: inline-block;
-      animation: pulse 2s infinite;
-    }
-    
-    @keyframes pulse {
-      0% {
-        transform: scale(1);
-      }
-      50% {
-        transform: scale(1.05);
-      }
-      100% {
-        transform: scale(1);
-      }
-    }
-    
-    /* Scrollbar styling */
-    .panel::-webkit-scrollbar {
-      width: 6px;
-    }
-    
-    .panel::-webkit-scrollbar-track {
-      background: #f1f1f1;
-      border-radius: 10px;
-    }
-    
-    .panel::-webkit-scrollbar-thumb {
-      background: #c1c1c1;
-      border-radius: 10px;
-    }
-    
-    .panel::-webkit-scrollbar-thumb:hover {
-      background: #a1a1a1;
-    }
-    
-    /* Loading spinner */
-    .spinner-container {
-      display: flex;
-      justify-content: center;
+    .batch-actions-bar {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, var(--primary-color), #1d6fa5);
+      color: white;
+      padding: 1rem 1.5rem;
+      border-radius: 50px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+      display: none;
       align-items: center;
-      height: 100px;
+      gap: 1.5rem;
+      z-index: 1000;
+      animation: slideUp 0.3s ease;
     }
     
-    .spinner-border {
-      color: var(--primary-color);
+    .batch-actions-bar.visible {
+      display: flex;
     }
-
-    /* Category edit modal styling */
+    
+    @keyframes slideUp {
+      from {
+        bottom: -100px;
+        opacity: 0;
+      }
+      to {
+        bottom: 20px;
+        opacity: 1;
+      }
+    }
+    
+    .batch-count {
+      font-weight: 600;
+      font-size: 1rem;
+    }
+    
+    .batch-count-number {
+      background: rgba(255,255,255,0.3);
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      margin-left: 0.5rem;
+    }
+    
     .category-select {
       border-radius: 6px;
       border: 1px solid #e0e0e0;
@@ -413,23 +425,73 @@
       from { opacity: 0; }
       to { opacity: 1; }
     }
+    
+    .panel::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    .panel::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 10px;
+    }
+    
+    .panel::-webkit-scrollbar-thumb {
+      background: #c1c1c1;
+      border-radius: 10px;
+    }
+    
+    .panel::-webkit-scrollbar-thumb:hover {
+      background: #a1a1a1;
+    }
+    
+    .spinner-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100px;
+    }
+    
+    .spinner-border {
+      color: var(--primary-color);
+    }
+
+    .select-all-container {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem;
+      background: rgba(52, 152, 219, 0.05);
+      border-radius: 6px;
+      margin-bottom: 1rem;
+    }
+
+    .select-all-checkbox {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+    }
+
+    .select-all-label {
+      margin: 0;
+      cursor: pointer;
+      user-select: none;
+    }
   </style>
 </head>
 <body>
   <div class="container py-4">
-    <!-- Page Header -->
     <div class="page-header text-center mb-4">
       <h1><i class="fas fa-flask"></i> Edit Question Bank</h1>
-      <p class="mt-2 mb-0">Edit your question bank</p>
+      <p class="mt-2 mb-0">Edit your question bank with batch operations</p>
     </div>
 
-    <!-- Three-column layout -->
     <div class="column-container">
-      <!-- Left Column: Topics/Sub-topics -->
       <div class="panel" style="flex: 0 0 25%;">
         <div class="panel-header">
-          <i class="fas fa-book"></i>
-          <h5>Topics</h5>
+          <div class="panel-header-left">
+            <i class="fas fa-book"></i>
+            <h5>Topics</h5>
+          </div>
         </div>
         <div class="accordion" id="syllabusAccordion">
           {% for topic, subs in syllabus.items() %}
@@ -464,11 +526,12 @@
         </div>
       </div>      
 
-      <!-- Middle Column: Question Images -->
       <div class="panel" style="flex: 0 0 74%;">
         <div class="panel-header">
-          <i class="fas fa-question-circle"></i>
-          <h5>Available Questions</h5>
+          <div class="panel-header-left">
+            <i class="fas fa-question-circle"></i>
+            <h5>Available Questions</h5>
+          </div>
         </div>
         <div id="question-list">
           <div class="empty-state">
@@ -477,11 +540,22 @@
           </div>
         </div>      
       </div>
-      </div>
     </div>
   </div>
 
-  <!-- Modal for Preview -->
+  <div class="batch-actions-bar" id="batchActionsBar">
+    <div class="batch-count">
+      <i class="fas fa-check-circle"></i>
+      <span class="batch-count-number" id="batchCount">0</span> selected
+    </div>
+    <button class="btn btn-custom-success" onclick="openBatchEdit()">
+      <i class="fas fa-edit"></i> Batch Edit Category
+    </button>
+    <button class="btn btn-light" onclick="clearSelection()">
+      <i class="fas fa-times"></i> Clear Selection
+    </button>
+  </div>
+
   <div class="modal fade" id="previewModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-lg">
       <div class="modal-content">
@@ -501,7 +575,6 @@
     </div>
   </div>
 
-  <!-- Modal for Edit Question Category -->
   <div class="modal fade" id="editCategoryModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
@@ -550,10 +623,58 @@
     </div>
   </div>
 
+  <div class="modal fade" id="batchEditModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Batch Edit Categories</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i>
+            Moving <strong id="batchEditCount">0</strong> questions to a new category
+          </div>
+          
+          <div class="form-group mb-3">
+            <label for="batchTopicSelect" class="form-label">Select new topic:</label>
+            <select class="category-select" id="batchTopicSelect">
+              <option value="">Select a topic...</option>
+              {% for topic, _ in syllabus.items() %}
+              <option value="{{ topic }}">{{ topic }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          
+          {% for topic, subs in syllabus.items() %}
+          <div class="form-group mb-3 subtopic-select" id="batch-subtopics-{{ topic|replace(' ', '_') }}">
+            <label for="batchSubtopicSelect-{{ topic|replace(' ', '_') }}" class="form-label">Select new subtopic:</label>
+            <select class="category-select" id="batchSubtopicSelect-{{ topic|replace(' ', '_') }}">
+              <option value="">Select a subtopic...</option>
+              {% for sub in subs %}
+              <option value="{{ sub.id }}" data-level="{{ sub.level }}">{{ sub.name }} ({{ sub.level }})</option>
+              {% endfor %}
+            </select>
+          </div>
+          {% endfor %}
+          
+          <div id="batchCategoryError" class="text-danger mb-3" style="display: none;">
+            Please select both a topic and a subtopic.
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-custom-outline" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-custom-success" id="saveBatchCategoryBtn">
+            <i class="fas fa-save"></i> Apply to All Selected
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    // Store selected questions with more comprehensive data
-    const selected = new Map();
+    const selectedQuestions = new Set();
     let currentQuestions = [];
     let currentPreviewQuestion = null;
     let currentSubtopicId = null;
@@ -562,12 +683,9 @@
     let currentLevel = null;
     let editingQuestionId = null;
     
-    // Syllabus data structure to store all topics and subtopics
     const syllabusData = {};
     
-    // Initialize event listeners
     document.addEventListener('DOMContentLoaded', function() {
-      // Load syllabus data from the DOM
       document.querySelectorAll('.topic-link').forEach(link => {
         const topic = link.getAttribute('data-topic');
         const subtopic = link.getAttribute('data-subtopic');
@@ -585,54 +703,209 @@
         });
       });
       
-      // Setup topic change event to show relevant subtopics
       document.getElementById('topicSelect').addEventListener('change', function() {
         const selectedTopic = this.value;
-        
-        // Hide all subtopic selects first
         document.querySelectorAll('.subtopic-select').forEach(el => {
-          el.classList.remove('visible');
+          if (!el.id.startsWith('batch-')) {
+            el.classList.remove('visible');
+          }
         });
         
-        // Show the selected topic's subtopics
         if (selectedTopic) {
           const subtopicSelectId = `subtopics-${selectedTopic.replace(/ /g, '_')}`;
           document.getElementById(subtopicSelectId).classList.add('visible');
         }
       });
+
+      document.getElementById('batchTopicSelect').addEventListener('change', function() {
+        const selectedTopic = this.value;
+        document.querySelectorAll('.subtopic-select').forEach(el => {
+          if (el.id.startsWith('batch-')) {
+            el.classList.remove('visible');
+          }
+        });
+        
+        if (selectedTopic) {
+          const subtopicSelectId = `batch-subtopics-${selectedTopic.replace(/ /g, '_')}`;
+          document.getElementById(subtopicSelectId).classList.add('visible');
+        }
+      });
       
-      // Setup save category button
       document.getElementById('saveCategoryBtn').addEventListener('click', saveQuestionCategory);
+      document.getElementById('saveBatchCategoryBtn').addEventListener('click', saveBatchCategory);
     });
     
-    function updateSelectedCount() {
-      const countElement = document.getElementById('selectedCount');
-      if (countElement) {
-        countElement.textContent = selected.size;
-        
-        // Add animation class if count changes
-        countElement.classList.add('animated-badge');
-        setTimeout(() => {
-          countElement.classList.remove('animated-badge');
-        }, 1000);
+    function toggleQuestion(questionId) {
+      if (selectedQuestions.has(questionId)) {
+        selectedQuestions.delete(questionId);
+      } else {
+        selectedQuestions.add(questionId);
+      }
+      updateBatchUI();
+      updateQuestionCard(questionId);
+    }
+
+    function toggleSelectAll() {
+      const checkbox = document.getElementById('selectAllCheckbox');
+      if (checkbox.checked) {
+        currentQuestions.forEach(q => selectedQuestions.add(q.id));
+      } else {
+        currentQuestions.forEach(q => selectedQuestions.delete(q.id));
+      }
+      updateBatchUI();
+      renderQuestionList(currentQuestions);
+    }
+    
+    function updateBatchUI() {
+      const bar = document.getElementById('batchActionsBar');
+      const count = document.getElementById('batchCount');
+      
+      count.textContent = selectedQuestions.size;
+      
+      if (selectedQuestions.size > 0) {
+        bar.classList.add('visible');
+      } else {
+        bar.classList.remove('visible');
+      }
+
+      const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+      if (selectAllCheckbox) {
+        selectAllCheckbox.checked = currentQuestions.length > 0 && 
+          currentQuestions.every(q => selectedQuestions.has(q.id));
+        selectAllCheckbox.indeterminate = selectedQuestions.size > 0 && 
+          !selectAllCheckbox.checked;
       }
     }
     
-    function updateFinalizeButton() {
-      const finalizeBtn = document.getElementById('finalizeBtn');
-      if (finalizeBtn) {
-        finalizeBtn.disabled = selected.size === 0;
+    function updateQuestionCard(questionId) {
+      const card = document.querySelector(`[data-question-id="${questionId}"]`);
+      if (card) {
+        const checkbox = card.querySelector('.card-checkbox');
+        checkbox.checked = selectedQuestions.has(questionId);
+        
+        if (selectedQuestions.has(questionId)) {
+          card.classList.add('selected');
+        } else {
+          card.classList.remove('selected');
+        }
       }
+    }
+    
+    function clearSelection() {
+      selectedQuestions.clear();
+      updateBatchUI();
+      document.querySelectorAll('.card').forEach(card => {
+        card.classList.remove('selected');
+        const checkbox = card.querySelector('.card-checkbox');
+        if (checkbox) checkbox.checked = false;
+      });
+    }
+    
+    function openBatchEdit() {
+      if (selectedQuestions.size === 0) return;
+      
+      document.getElementById('batchEditCount').textContent = selectedQuestions.size;
+      document.getElementById('batchTopicSelect').value = '';
+      document.querySelectorAll('.subtopic-select').forEach(el => {
+        if (el.id.startsWith('batch-')) {
+          el.classList.remove('visible');
+          el.querySelector('select').value = '';
+        }
+      });
+      document.getElementById('batchCategoryError').style.display = 'none';
+      
+      new bootstrap.Modal(document.getElementById('batchEditModal')).show();
+    }
+    
+    function saveBatchCategory() {
+      const topicSelect = document.getElementById('batchTopicSelect');
+      const selectedTopic = topicSelect.value;
+      
+      if (!selectedTopic) {
+        document.getElementById('batchCategoryError').style.display = 'block';
+        return;
+      }
+      
+      const subtopicSelect = document.getElementById(`batchSubtopicSelect-${selectedTopic.replace(/ /g, '_')}`);
+      const selectedSubtopicId = subtopicSelect.value;
+      
+      if (!selectedSubtopicId) {
+        document.getElementById('batchCategoryError').style.display = 'block';
+        return;
+      }
+      
+      const selectedOption = subtopicSelect.options[subtopicSelect.selectedIndex];
+      const selectedSubtopicName = selectedOption.text.split(' (')[0];
+      
+      const questionIds = Array.from(selectedQuestions);
+      let completedRequests = 0;
+      
+      questionIds.forEach(qid => {
+        const postData = {
+          'qid': qid,
+          'topicid': selectedSubtopicId
+        };
+        
+        fetch('{{url_for("edit_category")}}', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(postData)
+        }).then(() => {
+          completedRequests++;
+          
+          if (completedRequests === questionIds.length) {
+            showToast(`Batch Update Complete`, `${questionIds.length} questions moved to ${selectedTopic} > ${selectedSubtopicName}`);
+            
+            bootstrap.Modal.getInstance(document.getElementById('batchEditModal')).hide();
+            
+            if (selectedSubtopicId !== currentSubtopicId) {
+              questionIds.forEach(qid => {
+                const questionIndex = currentQuestions.findIndex(q => q.id == qid);
+                if (questionIndex > -1) {
+                  currentQuestions.splice(questionIndex, 1);
+                }
+              });
+              renderQuestionList(currentQuestions);
+            }
+            
+            clearSelection();
+          }
+        });
+      });
+    }
+    
+    function showToast(title, message) {
+      const toast = document.createElement('div');
+      toast.className = 'position-fixed top-0 end-0 p-3';
+      toast.style.zIndex = '9999';
+      
+      toast.innerHTML = `
+        <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+          <div class="toast-header">
+            <strong class="me-auto">${title}</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+          </div>
+          <div class="toast-body">
+            ${message}
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.remove();
+      }, 3000);
     }
     
     function EditQ(id) {
-      // Find the question data from current questions
       const questionData = currentQuestions.find(q => q.id == id);
       if (!questionData) return;
       
       editingQuestionId = id;
       
-      // Set current category info
       document.getElementById('currentTopic').textContent = currentTopic;
       document.getElementById('currentSubtopic').textContent = currentSubtopic;
       
@@ -640,17 +913,16 @@
       levelBadge.textContent = currentLevel;
       levelBadge.className = `badge ${currentLevel === 'AS' ? 'bg-as' : 'bg-a2'}`;
       
-      // Reset topic and subtopic selections
       document.getElementById('topicSelect').value = '';
       document.querySelectorAll('.subtopic-select').forEach(el => {
-        el.classList.remove('visible');
-        el.querySelector('select').value = '';
+        if (!el.id.startsWith('batch-')) {
+          el.classList.remove('visible');
+          el.querySelector('select').value = '';
+        }
       });
       
-      // Clear any previous errors
       document.getElementById('categoryError').style.display = 'none';
       
-      // Show the modal
       new bootstrap.Modal(document.getElementById('editCategoryModal')).show();
     }
     
@@ -675,44 +947,25 @@
       const selectedSubtopicName = selectedOption.text.split(' (')[0];
       const selectedLevel = selectedOption.getAttribute('data-level');
       
-      // Mock API call - in a real application this would be a fetch request to your backend
-      
       const postData = {
         'qid': editingQuestionId,
         'topicid': selectedSubtopicId
-      }
+      };
+      
       fetch('{{url_for("edit_category")}}', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(postData)
-      })
+      });
+      
       console.log(`Updating question ${editingQuestionId} category to Topic: ${selectedTopic}, Subtopic: ${selectedSubtopicName} (ID: ${selectedSubtopicId}), Level: ${selectedLevel}`);
 
-      // Update the UI to show success
-      const toast = document.createElement('div');
-      toast.className = 'position-fixed top-0 end-0 p-3';
-      toast.style.zIndex = '9999';
+      showToast('Category Updated', `Question ${editingQuestionId} has been moved to ${selectedTopic} > ${selectedSubtopicName}`);
       
-      toast.innerHTML = `
-        <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
-          <div class="toast-header">
-            <strong class="me-auto">Category Updated</strong>
-            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-          </div>
-          <div class="toast-body">
-            Question ${editingQuestionId} has been moved to ${selectedTopic} > ${selectedSubtopicName}
-          </div>
-        </div>
-      `;
-      
-      document.body.appendChild(toast);
-      
-      // Close the modal
       bootstrap.Modal.getInstance(document.getElementById('editCategoryModal')).hide();
       
-      // If the question was moved from the current view, remove it
       if (selectedSubtopicId !== currentSubtopicId) {
         const questionIndex = currentQuestions.findIndex(q => q.id == editingQuestionId);
         if (questionIndex > -1) {
@@ -720,97 +973,20 @@
           renderQuestionList(currentQuestions);
         }
       }
-      
-      // Set a timeout to remove the toast
-      setTimeout(() => {
-        toast.remove();
-      }, 3000);
-    }
-    
-    function removeFromTest(id) {
-      if (!selected.has(id)) return;
-      
-      selected.delete(id);
-      
-      // Update UI
-      refreshSelectedQuestions();
-      updateSelectedCount();
-      updateFinalizeButton();
-      updateHiddenField();
-    }
-    
-    function refreshSelectedQuestions() {
-      const container = document.getElementById('selectedQuestions');
-      if (!container) return;
-      
-      // If no questions selected, show empty state
-      if (selected.size === 0) {
-        container.innerHTML = `
-          <div class="empty-state">
-            <i class="fas fa-plus-circle"></i>
-            <p>Add questions to your test by clicking "Add to Test" on the available questions</p>
-          </div>
-        `;
-        return;
-      }
-      
-      // Clear existing content
-      container.innerHTML = '';
-      
-      // Add each selected question
-      selected.forEach((question, id) => {
-        const div = document.createElement('div');
-        div.className = 'selected-question';
-        
-        div.innerHTML = `
-          <img src="${question.image_url}" class="selected-thumbnail" onclick="showPreview('${id}')">
-          <div class="selected-question-info">
-            <div class="selected-question-title">${question.description || 'Question ' + id}</div>
-            <div class="selected-question-id">ID: ${id}</div>
-          </div>
-          <div class="selected-question-actions">
-            <button class="btn btn-sm btn-custom-outline" onclick="showPreview('${id}')">
-              <i class="fas fa-eye"></i>
-            </button>
-            <button class="btn btn-sm btn-custom-danger" onclick="removeFromTest('${id}')">
-              <i class="fas fa-trash"></i>
-            </button>
-          </div>
-        `;
-        
-        container.appendChild(div);
-      });
-    }
-    
-    function updateHiddenField() {
-      const questionIdsField = document.getElementById('questionIds');
-      if (questionIdsField) {
-        questionIdsField.value = Array.from(selected.keys()).join(',');
-      }
     }
     
     function showPreview(questionId, addButton = false) {
-      // Get the question data
       let question;
       
-      // Check if it's from selected questions
-      if (selected.has(questionId)) {
-        question = selected.get(questionId);
-      } else {
-        // Check if it's from current questions
-        question = currentQuestions.find(q => q.id == questionId);
-      }
+      question = currentQuestions.find(q => q.id == questionId);
       
       if (!question) return;
       
-      // Set current preview question for the "Add to Test" button
       currentPreviewQuestion = question;
       
-      // Update modal elements
       document.getElementById('previewImage').src = question.image_url;
       document.getElementById('previewTitle').textContent = `Question ${questionId}`;
       
-      // Set the description
       const descriptionElement = document.getElementById('previewDescription');
       if (question.description) {
         descriptionElement.textContent = question.description;
@@ -826,7 +1002,7 @@
         EditQ(questionId);
         bootstrap.Modal.getInstance(document.getElementById('previewModal')).hide();
       };
-      // Show the modal
+      
       new bootstrap.Modal(document.getElementById('previewModal')).show();
     }
     
@@ -843,6 +1019,16 @@
         return;
       }
       
+      container.innerHTML = '';
+
+      const selectAllDiv = document.createElement('div');
+      selectAllDiv.className = 'select-all-container';
+      selectAllDiv.innerHTML = `
+        <input type="checkbox" class="select-all-checkbox" id="selectAllCheckbox" onchange="toggleSelectAll()">
+        <label class="select-all-label" for="selectAllCheckbox">Select All</label>
+      `;
+      container.appendChild(selectAllDiv);
+      
       const row = document.createElement('div');
       row.className = 'row g-3';
       
@@ -850,8 +1036,11 @@
         const col = document.createElement('div');
         col.className = 'col-md-6';
         
+        const isSelected = selectedQuestions.has(q.id);
+        
         col.innerHTML = `
-          <div class="card">
+          <div class="card ${isSelected ? 'selected' : ''}" data-question-id="${q.id}">
+            <input type="checkbox" class="card-checkbox" ${isSelected ? 'checked' : ''} onchange="toggleQuestion('${q.id}')">
             <img src="${q.image_url}" class="card-img-top" alt="Question ${q.id}" onclick="showPreview('${q.id}', true)">
             <div class="card-body">
               <h6 class="card-title">${q.description || 'Question ' + q.id}</h6>
@@ -868,14 +1057,13 @@
         row.appendChild(col);
       });
       
-      container.innerHTML = '';
       container.appendChild(row);
+      updateBatchUI();
     }
     
     function loadQuestions(subtopicId) {
       const container = document.getElementById('question-list');
       
-      // Store current subtopic information
       const subtopicLink = document.querySelector(`.topic-link[data-subtopic-id="${subtopicId}"]`);
       if (subtopicLink) {
         currentTopic = subtopicLink.getAttribute('data-topic');
@@ -884,7 +1072,8 @@
         currentLevel = subtopicLink.getAttribute('data-level');
       }
       
-      // Show loading spinner
+      clearSelection();
+      
       container.innerHTML = `
         <div class="spinner-container">
           <div class="spinner-border" role="status">
@@ -896,10 +1085,7 @@
       fetch(`/get_questions?subtopic_id=${subtopicId}`)
         .then(response => response.json())
         .then(data => {
-          // Store current questions for reference
           currentQuestions = data.questions;
-          
-          // Render the questions
           renderQuestionList(data.questions);
         })
         .catch(error => {
