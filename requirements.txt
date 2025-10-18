@@ -1,4 +1,5 @@
 opencv-python
+opencv-contrib-python
 pdf2image
 pytesseract
 alive-progress
@@ -10,3 +11,5 @@ clean-text
 unidecode
 nltk
 pyspellchecker
+tesserocr
+pillow
