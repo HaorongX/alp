@@ -4,9 +4,21 @@ import numpy as np
 import cv2
 from pytesseract import image_to_string
 import re
-from toolbox import crop_white_margin
 import sys
 import os
+
+def crop_white_margin(image):
+    left = 0
+    right = image.shape[1] - 1
+    for i in range(image.shape[1]):
+            if not (image[0, i].all() == 255):
+                left = i
+                break
+    for i in reversed(range(image.shape[1])):
+            if not (image[0, i].all() == 255):
+                right = i
+                break
+    return image[0: image.shape[0], left : right + 1]
 
 def preprocessing(pdf_path):
     raw_images = convert_from_path(pdf_path, 300) # Specify image quality, must not be changed

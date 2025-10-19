@@ -1,15 +1,42 @@
 import cv2
 from pdf2image import convert_from_path
 import numpy as np
-import sys
 import re
 import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from tesserocr import PyTessBaseAPI, PSM
 from PIL import Image
+import fitz
+import base64
 
 cache_to_binary = {}
 tessdata_dir = "/usr/share/tesseract/tessdata"
+MAX_WORKER = 22
+
+def preprocess_qp(qp, qp_processed):
+    keep_ratio_vertical = 0.86
+    keep_ratio_horizontal = 0.92
+    doc = fitz.open(qp)
+    copyright_vertical_height = 0.13 # Remove the copyright info on the last page
+    for page_i in range(0, len(doc)):
+        page = doc[page_i]
+        rect = page.rect
+        height = rect.height
+        width = rect.width
+
+        crop_left = (1 - keep_ratio_horizontal) / 2 * width
+        crop_right = width - crop_left
+        crop_top = (1 - keep_ratio_vertical) / 2 * height
+        crop_bottom = height - crop_top
+        if page_i == len(doc) - 1:
+            crop_top += copyright_vertical_height * height
+
+        new_rect = fitz.Rect(crop_left, crop_top, crop_right, crop_bottom)
+        page.set_cropbox(new_rect)
+        page.set_mediabox(new_rect)
+
+    doc.save(qp_processed)
+    doc.close()
 
 def to_binary(image, cache_key):
     if cache_to_binary.get(cache_key) is not None:
@@ -168,12 +195,11 @@ def process_page_for_cropping(raw_pil_image):
     return processed_image
 
 def preprocessing(pdf_path):
-    print("Pre - processing...")
     raw_images = convert_from_path(pdf_path, 300)
     
     images = []
 
-    with ThreadPoolExecutor(max_workers = 22) as executor:
+    with ThreadPoolExecutor(max_workers = MAX_WORKER) as executor:
         futures = []
         
         for i, raw_img in enumerate(raw_images):
@@ -187,11 +213,14 @@ def preprocessing(pdf_path):
     
     return images
 
-def process_sub_questions(i, main_q, qp_name):
+def cv2_to_base64(img):
+    _, buffer = cv2.imencode('.png', img)
+    return base64.b64encode(buffer).decode('utf-8')
+
+def process_sub_questions(i, main_q):
     l = [main_q]  # Wrap into list to keep consistent input type
     sub = split_question(l, "secondary")
 
-    result_info = []
     cnt = 0
     res = search_for_next_q(l, 0, 0, QUESTION_LR_RANGE["secondary"], "secondary", QUESTION_OFFSET["secondary"])
     
@@ -199,6 +228,7 @@ def process_sub_questions(i, main_q, qp_name):
     if res[1] > 10:  # There is something before the first sub-question
         primary_statement = crop(l, 0, 0, res[0], res[1])
 
+    result_images = []
     for j in sub:
         cnt += 1
         # Ensure primary_statement is not None before concatenating to satisfy type-checkers
@@ -206,32 +236,27 @@ def process_sub_questions(i, main_q, qp_name):
             vis = np.concatenate([primary_statement, j], axis=0)
         else:
             vis = j
-        out_path = f"./{qp_name}/{i + 1}_{cnt}.png"
-        cv2.imwrite(out_path, vis)
+        result_images.append((i + 1, cnt, cv2_to_base64(vis)))
     
-    result_info.append((i + 1, len(sub)))
-    return result_info
+    return result_images
 
-def extractqp(qp_name, pdf_path):
-    qp_name = "test"
-    if not os.path.exists(qp_name):
-        os.makedirs(qp_name)
+def extractqp(pdf_path):
+    preprocess_qp(pdf_path, "qp_processed.pdf")
 
-    processed = preprocessing(sys.argv[1])
+    processed = preprocessing("qp_processed.pdf")
+    os.remove("qp_processed.pdf")
     main_questions = split_question(processed, "main")
     print(f"{len(main_questions)} questions found in total")
 
-    print("Extracting other questions...")
-    with ThreadPoolExecutor(max_workers = 22) as executor:
+    final_results = []
+    with ThreadPoolExecutor(max_workers = MAX_WORKER) as executor:
         futures = [
-            executor.submit(process_sub_questions, i, main_questions[i], qp_name)
+            executor.submit(process_sub_questions, i, main_questions[i])
             for i in range(len(main_questions))
         ]
         
         for f in as_completed(futures):
             results = f.result()
-            for q_num, sub_count in results:
-                print(f"{sub_count} questions found in question {q_num}")
-
-if __name__ == "__main__":
-    extractqp(sys.argv[1], sys.argv[1])
+            final_results += results
+        final_results.sort()
+    return final_results

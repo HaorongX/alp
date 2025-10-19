@@ -93,8 +93,8 @@
 
     <div class="upload-area">
       <form id="uploadForm" enctype="multipart/form-data">
-        <label for="pdfFile" class="custom-file-label">Choose PDF File</label>
-        <input type="file" id="pdfFile" name="pdf" accept="application/pdf" required>
+        <label for="pdfFile" class="custom-file-label">Upload a .zip file of one QP and MS</label>
+        <input type="file" id="pdfFile" name="pdf" accept="application/zip" required>
         <div id="status"></div>
       </form>
     </div>
@@ -130,7 +130,7 @@
       if (!fileInput.files.length) return;
 
       const formData = new FormData();
-      formData.append('pdf', fileInput.files[0]);
+      formData.append('zip', fileInput.files[0]);
 
       status.textContent = '⏳ Processing... Sit and relax';
       container.innerHTML = '';
