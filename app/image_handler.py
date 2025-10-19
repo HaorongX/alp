@@ -8,7 +8,6 @@ def upload_image(id, image):
         images[id].append(image)
     else:
         images[id] = [image]
-    print(f"Image {id} uploaded successfully.")
 
 def get_image():
     global images
