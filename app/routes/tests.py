@@ -43,6 +43,9 @@ def submit_test():
     generate_pdf(markschemes, title + " Mark Scheme", description, os.path.join(project_root, "ms.pdf"), indices, False)
     generate_integrated_pdf(questions, markschemes, title, description, indices)
     
+    for i in ["ms.html", "ms.pdf", "qp.html", "qp.pdf", "integrated.html"]:
+        os.remove(i)
+
     zip_path = os.path.join(project_root, 'temp.zip')
     with zipfile.ZipFile(zip_path, 'w') as zipf:
         for filename in ['qp.pdf', 'ms.pdf', 'qp.html', 'ms.html', 'integrated.html']:
