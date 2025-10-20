@@ -1,5 +1,4 @@
 from flask import Blueprint, render_template, request, jsonify, Response
-import base64
 from pypdf import PdfReader, PdfWriter
 import zipfile
 import os
@@ -10,7 +9,7 @@ upload_bp = Blueprint('upload', __name__)
 
 @upload_bp.route('/upload', methods=['GET'])
 def upload_qp():
-    return render_template('upload_qp.html', images=None, current_year=datetime.date.year)
+    return render_template('upload_qp.html', images=None, current_year=datetime.datetime.now().year)
 
 @upload_bp.route('/upload', methods=['POST'])
 def upload_pdf():
