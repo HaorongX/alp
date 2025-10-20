@@ -91,7 +91,7 @@ def extractms(msname):
     for i in range(1, len(reader.pages)): # Skip information page
         page = reader.pages[i]
         text = page.extract_text()
-        if text.find("General Marking Guidance") ==-1 and text.find("Pearson") == -1 and text.find("GENERIC MARKING PRINCIPLE") == -1 and text.find("Mark scheme abbreviations") == -1 and text.find("Mechanics of Marking") == -1:
+        if text.find("General Marking Guidance") ==-1 and text.find("Pearson") == -1 and text.find("GENERIC MARKING PRINCIPLE") == -1 and text.find("Mark scheme abbreviations") == -1 and text.find("Mechanics of Marking") == -1 and text.find("Annotations guidance for centres") == -1:
             p = reader.pages[i]
             output.add_page(p)
     reader.close()

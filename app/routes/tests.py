@@ -43,8 +43,6 @@ def submit_test():
     generate_pdf(markschemes, title + " Mark Scheme", description, os.path.join(project_root, "ms.pdf"), indices, False)
     generate_integrated_pdf(questions, markschemes, title, description, indices)
     
-    for i in ["ms.html", "ms.pdf", "qp.html", "qp.pdf", "integrated.html"]:
-        os.remove(i)
 
     zip_path = os.path.join(project_root, 'temp.zip')
     with zipfile.ZipFile(zip_path, 'w') as zipf:
@@ -53,4 +51,6 @@ def submit_test():
             if os.path.exists(file_path):
                 zipf.write(file_path, arcname=filename)
 
+    for i in ["ms.html", "ms.pdf", "qp.html", "qp.pdf", "integrated.html"]:
+        os.remove(i)
     return send_file(zip_path, mimetype='application/zip', as_attachment=True, download_name=f'test.zip')
