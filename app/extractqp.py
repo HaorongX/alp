@@ -7,13 +7,27 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from tesserocr import PyTessBaseAPI, PSM
 from PIL import Image
 import fitz
-import base64
+from app.cv2base64 import cv2_to_base64
+from pypdf import PdfReader, PdfWriter
 
 cache_to_binary = {}
 tessdata_dir = "/usr/share/tesseract/tessdata"
 MAX_WORKER = 22
 
-def preprocess_qp(qp, qp_processed):
+def preprocessing(qp):
+    reader = PdfReader(qp)
+    output = PdfWriter()
+
+    for i in range(1, len(reader.pages)): # Skip information page
+        page = reader.pages[i]
+        text = page.extract_text()
+        if text.find("BLANK PAGE") == -1:
+            p = reader.pages[i]
+            output.add_page(p)
+    reader.close()
+    output.write(qp)
+    output.close()
+
     keep_ratio_vertical = 0.86
     keep_ratio_horizontal = 0.92
     doc = fitz.open(qp)
@@ -35,8 +49,23 @@ def preprocess_qp(qp, qp_processed):
         page.set_cropbox(new_rect)
         page.set_mediabox(new_rect)
 
-    doc.save(qp_processed)
+    doc.save("extractqp_working.pdf")
     doc.close()
+
+    raw_images = convert_from_path("extractqp_working.pdf", 300)
+    images = []
+    with ThreadPoolExecutor(max_workers = MAX_WORKER) as executor:
+        futures = []
+        
+        for i, raw_img in enumerate(raw_images):
+            future = executor.submit(process_page_for_cropping, raw_img)
+            futures.append(future)
+        
+        for future in futures:
+            images.append(future.result())    
+    del raw_images
+    os.remove("extractqp_working.pdf")
+    return images
 
 def to_binary(image, cache_key):
     if cache_to_binary.get(cache_key) is not None:
@@ -194,29 +223,6 @@ def process_page_for_cropping(raw_pil_image):
     processed_image = crop_white(image_array)
     return processed_image
 
-def preprocessing(pdf_path):
-    raw_images = convert_from_path(pdf_path, 300)
-    
-    images = []
-
-    with ThreadPoolExecutor(max_workers = MAX_WORKER) as executor:
-        futures = []
-        
-        for i, raw_img in enumerate(raw_images):
-            future = executor.submit(process_page_for_cropping, raw_img)
-            futures.append(future)
-        
-        for future in futures:
-            images.append(future.result())
-            
-    del raw_images
-    
-    return images
-
-def cv2_to_base64(img):
-    _, buffer = cv2.imencode('.png', img)
-    return base64.b64encode(buffer).decode('utf-8')
-
 def process_sub_questions(i, main_q):
     l = [main_q]  # Wrap into list to keep consistent input type
     sub = split_question(l, "secondary")
@@ -241,10 +247,7 @@ def process_sub_questions(i, main_q):
     return result_images
 
 def extractqp(pdf_path):
-    preprocess_qp(pdf_path, "qp_processed.pdf")
-
-    processed = preprocessing("qp_processed.pdf")
-    os.remove("qp_processed.pdf")
+    processed = preprocessing(pdf_path)
     main_questions = split_question(processed, "main")
     print(f"{len(main_questions)} questions found in total")
 

@@ -3,8 +3,7 @@ import numpy as np
 import cv2
 from pytesseract import image_to_string
 import re
-import sys
-import os
+from app.cv2base64 import cv2_to_base64
 from multiprocessing import Pool, cpu_count
 from pypdf import PdfReader, PdfWriter
 
@@ -85,8 +84,8 @@ def process_single_page(args):
     # Tag each section with page number for sorting later
     return [(text, img, page_num) for text, img in sections]
 
-if __name__ == "__main__":
-    reader = PdfReader(sys.argv[1])
+def extractms(msname):
+    reader = PdfReader(msname)
     output = PdfWriter()
 
     for i in range(1, len(reader.pages)): # Skip information page
@@ -97,26 +96,18 @@ if __name__ == "__main__":
             output.add_page(p)
     reader.close()
     
-    with open("test.pdf", 'wb') as f:
+    with open("extractms_working.pdf", 'wb') as f:
         output.write(f)
-    os.remove(sys.argv[1])
-    images = preprocessing("test.pdf")
-    ms_name = "test"
-    if not os.path.exists(ms_name):
-        os.makedirs(ms_name)
-    
-    get_left_margin(images[0])
+    images = preprocessing("extractms_working.pdf")
     
     num_processes = max(1, cpu_count() - 1)
     
     if len(images) > 1 and num_processes > 1:
-        # Prepare arguments with page numbers
         args_list = [(img, idx) for idx, img in enumerate(images)]
         
         with Pool(processes=num_processes) as pool:
             results = pool.map(process_single_page, args_list)
         
-        # Flatten and sort by page number to maintain order
         ms_raw_with_page = []
         for page_sections in results:
             ms_raw_with_page.extend(page_sections)
@@ -131,8 +122,8 @@ if __name__ == "__main__":
         for img in images:
             ms_raw += get(img)
     
-    # Original merging logic (unchanged)
     i = 0
+    final_results = []
     while i < len(ms_raw):
         index = re.search(r"^\d{1,2}(\([a-z]\))", ms_raw[i][0]).group()
         image = ms_raw[i][1]
@@ -142,4 +133,5 @@ if __name__ == "__main__":
             j += 1
         i = j
         image = crop_white_margin(image)
-        cv2.imwrite(f"./{ms_name}/{index[:-3]}_{ord(index[-2]) - ord('a') + 1}.png", image)
+        final_results.append((index[:-3], ord(index[-2]) - ord('a') + 1, cv2_to_base64(image)))
+    return final_results

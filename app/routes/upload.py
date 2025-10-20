@@ -3,7 +3,7 @@ from pypdf import PdfReader, PdfWriter
 import zipfile
 import os
 import datetime
-from app import extractqp
+from app import extractqp, extractms
 
 upload_bp = Blueprint('upload', __name__)
 
@@ -29,23 +29,13 @@ def upload_pdf():
             os.remove(i)
         return Response()
 
-    reader = PdfReader(qp)
-    output = PdfWriter()
-
-    for i in range(1, len(reader.pages)): # Skip information page
-        page = reader.pages[i]
-        text = page.extract_text()
-        if text.find("BLANK PAGE") == -1:
-            p = reader.pages[i]
-            output.add_page(p)
-    reader.close()
-    output.write(qp)
-    output.close()
-
     results = extractqp.extractqp(qp)
+    results2 = extractms.extractms(ms)
     web_result = []
     for i, j, image in results:
-        web_result.append({"id" : f"{i}.{j}", "image" : image})
+        web_result.append({"id" : f"qp{i}.{j}", "image" : image})
+    for i, j, image in results2:
+        web_result.append({"id" : f"ms{i}.{j}", "image" : image})
     for i in assestlist:
         os.remove(i)
     return jsonify({"data": web_result})
