@@ -5,20 +5,16 @@
   <title>Create Test</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="/static/create_style.css"
+  <link rel="stylesheet" href="/static/create_style.css">
 </head>
-<body>
-  <div class="container py-4">
-    <!-- Page Header -->
-    <div class="page-header text-center mb-4">
-      <h1><i class="fas fa-flask"></i> Create Your Test</h1>
-      <p class="mt-2 mb-0">Select topics, add questions, build your perfect assessment</p>
-    </div>
-
+<body style="margin: 0; height: 100vh; overflow: hidden;">
+  <div class="container-fluid" style="height: 100vh; display: flex; flex-direction: column;">
+    
     <!-- Three-column layout -->
-    <div class="column-container">
+    <div class="column-container flex-grow-1" style="display: flex; gap: 20px; height: 100%; min-height: 0;">
+      
       <!-- Left Column: Topics/Sub-topics -->
-      <div class="panel" style="flex: 0 0 25%;">
+      <div class="panel" style="flex: 0 0 25%; height: 100%; overflow-y: auto;">
         <div class="panel-header">
           <i class="fas fa-book"></i>
           <h5>Topics</h5>
@@ -56,29 +52,33 @@
       </div>      
 
       <!-- Middle Column: Question Images -->
-      <div class="panel" style="flex: 0 0 40%;">
+      <div class="panel" style="flex: 0 0 40%; height: 100%; overflow-y: auto;">
         <div class="panel-header">
           <i class="fas fa-question-circle"></i>
           <h5>Available Questions</h5>
         </div>
         <div id="question-list">
-          <div class="empty-state">
-            <i class="fas fa-hand-point-left"></i>
+          <div class="empty-state text-center text-muted">
+            <i class="fas fa-hand-point-left fa-2x mb-2"></i>
             <p>Select a subtopic from the left panel to load questions</p>
           </div>
         </div>      
       </div>
 
       <!-- Right Column: Selected Questions -->
-      <div class="panel" style="flex: 0 0 35%;">
-        <div class="panel-header">
-          <i class="fas fa-check-circle"></i>
-          <h5>Selected Questions <span id="selectedCount" class="badge bg-primary ms-2">0</span></h5>
+      <div class="panel" style="flex: 0 0 33%; height: 100%; overflow-y: auto;">
+        <div class="panel-header d-flex justify-content-between align-items-center">
+          <div>
+            <i class="fas fa-check-circle"></i>
+            <h5 class="d-inline-block mb-0">Selected Questions</h5>
+          </div>
+          <span id="selectedCount" class="badge bg-primary">0</span>
         </div>
+
         <div id="selectedQuestions">
-          <div class="empty-state">
-            <i class="fas fa-plus-circle"></i>
-            <p>Add questions to your test by clicking "Add to Test" on the available questions</p>
+          <div class="empty-state text-center text-muted">
+            <i class="fas fa-plus-circle fa-2x mb-2"></i>
+            <p>Add questions to your test by clicking “Add to Test”</p>
           </div>
         </div>
         
@@ -86,17 +86,17 @@
           <form method="post" action="{{ url_for('tests.submit_test') }}" id="testForm">
             <input type="hidden" name="question_ids" id="questionIds">
             
-            <div class="test-info">
-              <label for="testTitle">Test Title</label>
+            <div class="test-info mb-3">
+              <label for="testTitle" class="form-label">Test Title</label>
               <input type="text" class="form-control" id="testTitle" name="title" placeholder="Enter test title" required>
             </div>
             
-            <div class="test-info">
-              <label for="testDescription">Description (Optional)</label>
+            <div class="test-info mb-3">
+              <label for="testDescription" class="form-label">Description (Optional)</label>
               <textarea class="form-control" id="testDescription" name="description" rows="2" placeholder="Add brief description"></textarea>
             </div>
             
-            <button type="submit" class="btn btn-custom-primary w-100 mt-3" id="finalizeBtn" disabled>
+            <button type="submit" class="btn btn-custom-primary w-100 mt-2" id="finalizeBtn" disabled>
               <i class="fas fa-check-double me-2"></i> Finalize Test
             </button>
           </form>
@@ -109,15 +109,15 @@
   <div class="modal fade" id="previewModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-lg">
       <div class="modal-content">
-        <div class="modal-header">
+        <div class="modal-header border-0">
           <h5 class="modal-title" id="previewTitle">Question Preview</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <img id="previewImage" class="modal-img" src="" alt="Preview">
-          <div class="modal-description" id="previewDescription"></div>
+          <img id="previewImage" class="modal-img img-fluid rounded mb-3" src="" alt="Preview">
+          <div class="modal-description text-muted" id="previewDescription"></div>
         </div>
-        <div class="modal-footer">
+        <div class="modal-footer border-0">
           <button type="button" class="btn btn-custom-outline" data-bs-dismiss="modal">Close</button>
           <button type="button" class="btn btn-custom-primary" id="addToTestBtn">Add to Test</button>
         </div>
@@ -127,34 +127,25 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    // Store selected questions with more comprehensive data
     const selected = new Map();
     let currentQuestions = [];
     let currentPreviewQuestion = null;
     
-    // Initialize event listeners
     document.addEventListener('DOMContentLoaded', function() {
-      // Test form validation
       document.getElementById('testForm').addEventListener('submit', function(e) {
         if (selected.size === 0) {
           e.preventDefault();
           alert('Please select at least one question for your test.');
         }
       });
-      
-      // Enable/disable finalize button based on selection
       updateFinalizeButton();
     });
     
     function updateSelectedCount() {
       const countElement = document.getElementById('selectedCount');
       countElement.textContent = selected.size;
-      
-      // Add animation class if count changes
       countElement.classList.add('animated-badge');
-      setTimeout(() => {
-        countElement.classList.remove('animated-badge');
-      }, 1000);
+      setTimeout(() => countElement.classList.remove('animated-badge'), 1000);
     }
     
     function updateFinalizeButton() {
@@ -164,15 +155,9 @@
     
     function addToTest(id) {
       if (selected.has(id)) return;
-      
-      // Find the question data from current questions
       const questionData = currentQuestions.find(q => q.id == id);
       if (!questionData) return;
-      
-      // Add to selected map
       selected.set(id, questionData);
-      
-      // Update UI
       refreshSelectedQuestions();
       updateSelectedCount();
       updateFinalizeButton();
@@ -181,10 +166,7 @@
     
     function removeFromTest(id) {
       if (!selected.has(id)) return;
-      
       selected.delete(id);
-      
-      // Update UI
       refreshSelectedQuestions();
       updateSelectedCount();
       updateFinalizeButton();
@@ -193,8 +175,6 @@
     
     function refreshSelectedQuestions() {
       const container = document.getElementById('selectedQuestions');
-      
-      // If no questions selected, show empty state
       if (selected.size === 0) {
         container.innerHTML = `
           <div class="empty-state">
@@ -204,15 +184,10 @@
         `;
         return;
       }
-      
-      // Clear existing content
       container.innerHTML = '';
-      
-      // Add each selected question
       selected.forEach((question, id) => {
         const div = document.createElement('div');
         div.className = 'selected-question';
-        
         div.innerHTML = `
           <img src="${question.image_url}" class="selected-thumbnail" onclick="showPreview('${id}')">
           <div class="selected-question-info">
@@ -228,7 +203,6 @@
             </button>
           </div>
         `;
-        
         container.appendChild(div);
       });
     }
@@ -238,36 +212,18 @@
     }
     
     function showPreview(questionId, addButton = false) {
-      // Get the question data
       let question;
-      
-      // Check if it's from selected questions
-      if (selected.has(questionId)) {
-        question = selected.get(questionId);
-      } else {
-        // Check if it's from current questions
-        question = currentQuestions.find(q => q.id == questionId);
-      }
-      
+      if (selected.has(questionId)) question = selected.get(questionId);
+      else question = currentQuestions.find(q => q.id == questionId);
       if (!question) return;
-      
-      // Set current preview question for the "Add to Test" button
       currentPreviewQuestion = question;
-      
-      // Update modal elements
       document.getElementById('previewImage').src = question.image_url;
       document.getElementById('previewTitle').textContent = `Question ${questionId}`;
-      
-      // Set the description
       const descriptionElement = document.getElementById('previewDescription');
       if (question.description) {
         descriptionElement.textContent = question.description;
         descriptionElement.style.display = 'block';
-      } else {
-        descriptionElement.style.display = 'none';
-      }
-      
-      // Show/hide the "Add to Test" button based on whether it's already selected
+      } else descriptionElement.style.display = 'none';
       const addToTestBtn = document.getElementById('addToTestBtn');
       if (selected.has(questionId)) {
         addToTestBtn.textContent = 'Already Added';
@@ -280,15 +236,11 @@
           bootstrap.Modal.getInstance(document.getElementById('previewModal')).hide();
         };
       }
-      
-      // Show the modal
       new bootstrap.Modal(document.getElementById('previewModal')).show();
     }
     
     function loadQuestions(subtopicId) {
       const container = document.getElementById('question-list');
-      
-      // Show loading spinner
       container.innerHTML = `
         <div class="spinner-container">
           <div class="spinner-border" role="status">
@@ -296,16 +248,11 @@
           </div>
         </div>
       `;
-      
       fetch(`/get_questions?subtopic_id=${subtopicId}`)
         .then(response => response.json())
         .then(data => {
-          // Store current questions for reference
           currentQuestions = data.questions;
-          
-          // Clear and rebuild the UI
           container.innerHTML = '';
-          
           if (data.questions.length === 0) {
             container.innerHTML = `
               <div class="empty-state">
@@ -315,16 +262,12 @@
             `;
             return;
           }
-          
           const row = document.createElement('div');
           row.className = 'row g-3';
-          
           data.questions.forEach(q => {
             const col = document.createElement('div');
             col.className = 'col-md-6';
-            
             const isSelected = selected.has(q.id);
-            
             col.innerHTML = `
               <div class="card">
                 <img src="${q.image_url}" class="card-img-top" alt="Question ${q.id}" onclick="showPreview('${q.id}', true)">
@@ -340,10 +283,8 @@
                 </div>
               </div>
             `;
-            
             row.appendChild(col);
           });
-          
           container.appendChild(row);
         })
         .catch(error => {

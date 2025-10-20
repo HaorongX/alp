@@ -1,0 +1,68 @@
+body {
+    background: linear-gradient(135deg, #eef2f7, #ffffff);
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    color: #2c3e50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.dashboard-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    padding: 3rem 2.5rem;
+    text-align: center;
+    width: 100%;
+    max-width: 480px;
+    transition: all 0.3s ease;
+}
+
+.dashboard-card:hover {
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+    transform: translateY(-3px);
+}
+
+h1 {
+    font-weight: 700;
+    font-size: 2rem;
+    color: #1d3557;
+    margin-bottom: 1rem;
+}
+
+p.subtitle {
+    color: #6c757d;
+    font-size: 1rem;
+    margin-bottom: 2rem;
+}
+
+.btn-custom {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    width: 100%;
+    background-color: #00BDB6;
+    border: none;
+    color: white;
+    font-weight: 600;
+    border-radius: 8px;
+    padding: 0.9rem 1.2rem;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    transition: all 0.25s ease;
+}
+
+.btn-custom:hover {
+    background-color: #8EE8D8;
+    transform: translateY(-2px);
+}
+
+.footer {
+    text-align: center;
+    color: #adb5bd;
+    font-size: 0.85rem;
+    margin-top: 2rem;
+}

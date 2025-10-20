@@ -1,28 +1,32 @@
 :root {
-    --primary-color: #3498db;
-    --secondary-color: #2ecc71;
-    --accent-color: #f39c12;
-    --light-bg: #f8f9fa;
+    /* Cambridge Blue Primary Palette */
+    --cambridge-blue: #8EE8D8;
+    --cambridge-light-blue: #D1F9F1;
+    --cambridge-warm-blue: #00BDB6;
+    --cambridge-dark-blue: #133844;
+    
+    /* Secondary - Crest Palette */
+    --light-crest: #FFE2C8;
+    --warm-crest: #FFC392;
+    --crest: #FD8153;
+    --dark-crest: #DD3025;
+    
+    /* Neutral Colors */
+    --white: #ffffff;
+    --light-bg: #fafbfc;
     --dark-text: #2c3e50;
     --light-text: #ecf0f1;
+    
+    /* Design System */
     --border-radius: 12px;
     --box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
 body {
-    background-color: var(--light-bg);
+    background-color: var(--white);
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     color: var(--dark-text);
     padding-bottom: 2rem;
-}
-
-.page-header {
-    background: linear-gradient(135deg, var(--primary-color), #1d6fa5);
-    color: var(--light-text);
-    padding: 1.5rem 0;
-    border-radius: var(--border-radius);
-    margin-bottom: 2rem;
-    box-shadow: var(--box-shadow);
 }
 
 .page-header h1 {
@@ -40,7 +44,7 @@ body {
     border-radius: var(--border-radius);
     padding: 1.5rem;
     box-shadow: var(--box-shadow);
-    height: 75vh;
+    height: 100vh;
     overflow-y: auto;
     flex: 1;
     transition: all 0.3s ease;
@@ -51,12 +55,12 @@ body {
     align-items: center;
     margin-bottom: 1.5rem;
     padding-bottom: 0.75rem;
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: 1px solid var(--cambridge-light-blue);
 }
 
 .panel-header i {
     margin-right: 0.5rem;
-    color: var(--primary-color);
+    color: var(--cambridge-blue);
 }
 
 .panel-header h5 {
@@ -65,13 +69,13 @@ body {
 }
 
 .accordion-button:not(.collapsed) {
-    background-color: rgba(52, 152, 219, 0.1);
-    color: var(--primary-color);
+    background-color: var(--cambridge-light-blue);
+    color: var(--cambridge-dark-blue);
 }
 
 .accordion-button:focus {
     box-shadow: none;
-    border-color: rgba(52, 152, 219, 0.5);
+    border-color: var(--cambridge-blue);
 }
 
 .accordion-item {
@@ -87,12 +91,12 @@ body {
 }
 
 .bg-as {
-    background-color: #3498db;
+    background-color: var(--cambridge-warm-blue);
     color: white;
 }
 
 .bg-a2 {
-    background-color: #f39c12;
+    background-color: var(--warm-crest);
     color: white;
 }
 
@@ -106,9 +110,9 @@ body {
 }
 
 .topic-link:hover {
-    background-color: rgba(52, 152, 219, 0.1);
+    background-color: var(--cambridge-light-blue);
     padding-left: 0.5rem;
-    color: var(--primary-color);
+    color: var(--cambridge-dark-blue);
 }
 
 .card {
@@ -122,7 +126,7 @@ body {
 
 .card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 8px 15px rgba(142, 232, 216, 0.2);
 }
 
 .card-img-top {
@@ -155,14 +159,14 @@ body {
 }
 
 .btn-custom-primary {
-    background-color: var(--primary-color);
-    color: white;
+    background-color: var(--cambridge-blue);
+    color: var(--cambridge-dark-blue);
     border: none;
     transition: all 0.3s ease;
 }
 
 .btn-custom-primary:hover {
-    background-color: #2980b9;
+    background-color: var(--cambridge-warm-blue);
     color: white;
     transform: translateY(-2px);
 }
@@ -175,12 +179,12 @@ body {
 }
 
 .btn-custom-outline:hover {
-    background-color: #f8f9fa;
-    border-color: #d0d0d0;
+    background-color: var(--cambridge-light-blue);
+    border-color: var(--cambridge-blue);
 }
 
 .btn-custom-danger {
-    background-color: #e74c3c;
+    background-color: var(--dark-crest);
     color: white;
     border: none;
     transition: all 0.3s ease;
@@ -202,7 +206,7 @@ body {
 }
 
 .selected-question:hover {
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 8px rgba(142, 232, 216, 0.15);
 }
 
 .selected-thumbnail {
@@ -273,9 +277,10 @@ body {
 .modal-description {
     margin-top: 1rem;
     padding: 1rem;
-    background-color: #f8f9fa;
+    background-color: var(--cambridge-light-blue);
     border-radius: 8px;
     font-size: 0.9rem;
+    border-left: 3px solid var(--cambridge-blue);
 }
 
 .empty-state {
@@ -292,6 +297,7 @@ body {
     font-size: 3rem;
     margin-bottom: 1rem;
     opacity: 0.5;
+    color: var(--cambridge-blue);
 }
 
 .empty-state p {
@@ -301,10 +307,11 @@ body {
 }
 
 .finalizing-section {
-    background-color: #f8fafd;
+    background-color: var(--cambridge-blue);
     border-radius: 8px;
     padding: 1rem;
     margin-top: 1rem;
+    border-left: 3px solid var(--cambridge-light-blue);
 }
 
 .test-info {
@@ -345,12 +352,12 @@ body {
 }
 
 .panel::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
+    background: var(--cambridge-blue);
     border-radius: 10px;
 }
 
 .panel::-webkit-scrollbar-thumb:hover {
-    background: #a1a1a1;
+    background: var(--cambridge-warm-blue);
 }
 
 /* Loading spinner */
@@ -362,5 +369,5 @@ body {
 }
 
 .spinner-border {
-    color: var(--primary-color);
+    color: var(--cambridge-blue);
 }
