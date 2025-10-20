@@ -31,16 +31,15 @@ def preprocessing(pdf_path):
 
 def get_left_margin(image):
     image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    global THE_COLUMN
-    global L_MARGIN
     THE_STARTING_Y = 300
     for i in range(0, image.shape[1]):
         if image[THE_STARTING_Y + 20][i] != 255:
             L_MARGIN = i
             break
     THE_COLUMN = L_MARGIN + 7
+    return (L_MARGIN, THE_COLUMN)
 
-def next_black_bondary(image, y):
+def next_black_bondary(image, y, THE_COLUMN):
     column = image[y:, THE_COLUMN]
     black_pixels = np.where(column != 255)[0]
     
@@ -49,24 +48,25 @@ def next_black_bondary(image, y):
     return -1
 
 def get(image):
+    L_MARGIN, THE_COLUMN = get_left_margin(image)
     original = image
     THE_STARTING_Y = 270
     OFFSET = 55
-    PROBLEM_WIDTH = 240
+    PROBLEM_WIDTH = 230
     MAX_Y = image.shape[0]
     MAX_X = image.shape[1]
     allowed_chars = '0123456789abcdefghijklmnopqrstuvwxyz()'
     image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     image = cv2.bilateralFilter(image, 9, 75, 75)
     _, image = cv2.threshold(image, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-    first = next_black_bondary(image, THE_STARTING_Y)
-    second = next_black_bondary(image, first + 3)
+    first = next_black_bondary(image, THE_STARTING_Y, THE_COLUMN)
+    second = next_black_bondary(image, first + 3, THE_COLUMN)
     sections = []
     while second != -1:
         section = image[min(first + 3, MAX_Y) : min(first + 90, MAX_Y), L_MARGIN + 5 : L_MARGIN + PROBLEM_WIDTH]
         if cv2.countNonZero(255 - section) < 200:
             first = second
-            second = next_black_bondary(image, first + OFFSET)
+            second = next_black_bondary(image, first + OFFSET, THE_COLUMN)
             continue
         text = image_to_string(section, config='--psm 6 -c load_system_dawg=0 -c load_freq_dawg=0 -c tessedit_char_whitelist=' + allowed_chars).strip().lower() # The image contains of a single line of text
         if re.search(r"^\d{1,2}(\([a-z]\))?(\((i{1,3}|iv|v|vi|vii|viii|ix|x|xi)\))?$", text) != None:
@@ -74,7 +74,7 @@ def get(image):
                 text += "(a)"
             sections.append((text, original[first : second, 0 : MAX_X]))
         first = second
-        second = next_black_bondary(image, first + OFFSET)
+        second = next_black_bondary(image, first + OFFSET, THE_COLUMN)
     return sections
 
 
@@ -92,7 +92,7 @@ if __name__ == "__main__":
     for i in range(1, len(reader.pages)): # Skip information page
         page = reader.pages[i]
         text = page.extract_text()
-        if text.find("GENERIC MARKING PRINCIPLE") == -1 and text.find("Mark scheme abbreviations") == -1 and text.find("Mechanics of Marking") == -1:
+        if text.find("General Marking Guidance") ==-1 and text.find("Pearson") == -1 and text.find("GENERIC MARKING PRINCIPLE") == -1 and text.find("Mark scheme abbreviations") == -1 and text.find("Mechanics of Marking") == -1:
             p = reader.pages[i]
             output.add_page(p)
     reader.close()
