@@ -8,17 +8,19 @@ from multiprocessing import Pool, cpu_count
 from pypdf import PdfReader, PdfWriter
 
 def crop_white_margin(image):
-    left = 0
-    right = image.shape[1] - 1
-    for i in range(image.shape[1]):
-            if not (image[0, i].all() == 255):
-                left = i
-                break
-    for i in reversed(range(image.shape[1])):
-            if not (image[0, i].all() == 255):
-                right = i
-                break
-    return image[0: image.shape[0], left : right + 1]
+    if len(image.shape) == 3:
+        gray = np.all(image == 255, axis=2).astype(np.uint8) * 255
+    
+    rows = np.any(gray < 255, axis=1)
+    cols = np.any(gray < 255, axis=0)
+    
+    if not rows.any() or not cols.any():
+        return image
+    
+    row_min, row_max = np.where(rows)[0][[0, -1]]
+    col_min, col_max = np.where(cols)[0][[0, -1]]
+    
+    return image[row_min:row_max+1, col_min:col_max+1]
 
 def preprocessing(pdf_path):
     raw_images = convert_from_path(pdf_path, 300) # Specify image quality, must not be changed

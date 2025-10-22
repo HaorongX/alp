@@ -223,6 +223,21 @@ def process_page_for_cropping(raw_pil_image):
     processed_image = crop_white(image_array)
     return processed_image
 
+def crop_white_margin(image):
+    if len(image.shape) == 3:
+        gray = np.all(image == 255, axis=2).astype(np.uint8) * 255
+    
+    rows = np.any(gray < 255, axis=1)
+    cols = np.any(gray < 255, axis=0)
+    
+    if not rows.any() or not cols.any():
+        return image
+    
+    row_min, row_max = np.where(rows)[0][[0, -1]]
+    col_min, col_max = np.where(cols)[0][[0, -1]]
+    
+    return image[row_min:row_max+1, col_min:col_max+1]
+
 def process_sub_questions(i, main_q):
     l = [main_q]  # Wrap into list to keep consistent input type
     sub = split_question(l, "secondary")
@@ -242,6 +257,9 @@ def process_sub_questions(i, main_q):
             vis = np.concatenate([primary_statement, j], axis=0)
         else:
             vis = j
+        print(vis.shape)
+        vis = crop_white_margin(vis)
+        print(vis.shape)
         result_images.append((i + 1, cnt, cv2_to_base64(vis)))
     
     return result_images
