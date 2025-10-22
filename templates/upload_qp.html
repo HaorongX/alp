@@ -2,84 +2,178 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Upload Question Paper</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
+    :root {
+      --cambridge-blue: #8EE8D8;
+      --cambridge-light-blue: #D1F9F1;
+      --cambridge-warm-blue: #00BDB6;
+      --cambridge-dark-blue: #133844;
+      --light-crest: #FFE2C8;
+      --warm-crest: #FFC392;
+    }
+
     body {
-      background-color: #f5f7fa;
-      font-family: 'Segoe UI', sans-serif;
+      background-color: #ffffff;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       color: #2c3e50;
+      min-height: 100vh;
     }
 
     .hero {
       text-align: center;
-      margin: 50px 0 40px;
+      margin: 60px 0 50px;
     }
 
     .hero h1 {
       font-size: 2.4rem;
       font-weight: 700;
+      color: var(--cambridge-dark-blue);
+      margin-bottom: 12px;
+    }
+
+    .hero p {
+      color: #6c757d;
+      font-size: 1.05rem;
     }
 
     .upload-area {
       background: #fff;
-      padding: 40px;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      padding: 50px 40px;
+      border-radius: 16px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
       text-align: center;
+      border: 2px solid var(--cambridge-light-blue);
+      transition: all 0.3s ease;
+    }
+
+    .upload-area:hover {
+      border-color: var(--cambridge-blue);
+      box-shadow: 0 4px 20px rgba(142, 232, 216, 0.15);
     }
 
     .upload-area input[type="file"] {
       display: none;
     }
 
+    .upload-icon {
+      font-size: 3.5rem;
+      margin-bottom: 20px;
+      display: block;
+    }
+
     .custom-file-label {
       display: inline-block;
-      padding: 12px 28px;
+      padding: 14px 36px;
       font-size: 1rem;
-      background-color: #0d6efd;
-      color: #fff;
-      border-radius: 8px;
+      font-weight: 600;
+      background-color: var(--cambridge-blue);
+      color: var(--cambridge-dark-blue);
+      border-radius: 10px;
       cursor: pointer;
-      transition: background-color 0.2s ease;
+      transition: all 0.3s ease;
+      border: none;
     }
 
     .custom-file-label:hover {
-      background-color: #0b5ed7;
+      background-color: var(--cambridge-warm-blue);
+      color: #fff;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 189, 182, 0.25);
+    }
+
+    .custom-file-label:active {
+      transform: translateY(0);
     }
 
     #status {
-      margin-top: 20px;
+      margin-top: 24px;
       color: #6c757d;
       font-style: italic;
+      font-size: 0.95rem;
+      min-height: 24px;
     }
 
     .results {
-      margin-top: 50px;
+      margin-top: 60px;
     }
 
     .image-card {
-      border: none;
+      border: 1px solid #e9ecef;
       border-radius: 12px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-      transition: transform 0.15s ease;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+      transition: all 0.3s ease;
+      overflow: hidden;
+      background: #fff;
     }
 
     .image-card:hover {
-      transform: translateY(-3px);
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(142, 232, 216, 0.15);
+      border-color: var(--cambridge-blue);
     }
 
     .image-card img {
       border-radius: 12px 12px 0 0;
       width: 100%;
       height: auto;
+      background-color: #f8f9fa;
+    }
+
+    .image-card .card-body {
+      padding: 16px;
+      background: #fff;
+    }
+
+    .image-card .card-body small {
+      color: #6c757d;
+      font-weight: 500;
+      font-size: 0.85rem;
     }
 
     .footer {
       text-align: center;
       color: #adb5bd;
       font-size: 0.9rem;
-      margin-top: 60px;
+      margin-top: 80px;
+      padding: 30px 0;
+      border-top: 1px solid #e9ecef;
+    }
+
+    /* Loading animation */
+    .processing #status::after {
+      content: '';
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--cambridge-light-blue);
+      border-top-color: var(--cambridge-blue);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .hero h1 {
+        font-size: 2rem;
+      }
+
+      .upload-area {
+        padding: 40px 24px;
+      }
+
+      .custom-file-label {
+        padding: 12px 28px;
+        font-size: 0.95rem;
+      }
     }
   </style>
 </head>
@@ -88,12 +182,13 @@
   <div class="container">
     <div class="hero">
       <h1>📤 Upload Question Paper</h1>
-      <p class="text-muted">Upload a PDF to process and view extracted questions</p>
+      <p class="text-muted">Upload a ZIP file to process and view extracted questions</p>
     </div>
 
     <div class="upload-area">
       <form id="uploadForm" enctype="multipart/form-data">
-        <label for="pdfFile" class="custom-file-label">Upload a .zip file of one QP and MS</label>
+        <span class="upload-icon">📁</span>
+        <label for="pdfFile" class="custom-file-label">Choose ZIP File</label>
         <input type="file" id="pdfFile" name="pdf" accept="application/zip" required>
         <div id="status"></div>
       </form>
@@ -126,6 +221,7 @@
       const fileInput = this;
       const status = document.getElementById('status');
       const container = document.getElementById('imagesContainer');
+      const uploadArea = document.querySelector('.upload-area');
 
       if (!fileInput.files.length) return;
 
@@ -133,6 +229,7 @@
       formData.append('zip', fileInput.files[0]);
 
       status.textContent = '⏳ Processing... Sit and relax';
+      uploadArea.classList.add('processing');
       container.innerHTML = '';
 
       try {
@@ -145,6 +242,7 @@
 
         const result = await response.json();
         status.textContent = '✅ Complete';
+        uploadArea.classList.remove('processing');
 
         // Clear and render new images
         container.innerHTML = '';
@@ -164,6 +262,7 @@
 
       } catch (err) {
         status.textContent = '❌ Error processing file. Please try again.';
+        uploadArea.classList.remove('processing');
         console.error(err);
       }
     });
