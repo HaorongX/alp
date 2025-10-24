@@ -6,6 +6,7 @@ import re
 from app.cv2base64 import cv2_to_base64
 from multiprocessing import Pool, cpu_count
 from pypdf import PdfReader, PdfWriter
+import os
 
 def crop_white_margin(image):
     if len(image.shape) == 3:
@@ -101,6 +102,7 @@ def extractms(msname):
     with open("extractms_working.pdf", 'wb') as f:
         output.write(f)
     images = preprocessing("extractms_working.pdf")
+    os.remove("extractms_working.pdf")
     
     num_processes = max(1, cpu_count() - 1)
     

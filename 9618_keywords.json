@@ -1,7 +1,4 @@
 {
-  "Uncategorized": {
-    "AS_Level": {}
-  },
   "Data Representation": {
     "AS_Level": {
       "1.1 Data Representation": [
@@ -367,5 +364,6 @@
         "reinforcement learning"
       ]
     }
-  }
+  },
+  "Uncategorized": {"AS_Level": {"Uncategorized": []}}
 }

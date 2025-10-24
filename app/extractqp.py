@@ -257,9 +257,7 @@ def process_sub_questions(i, main_q):
             vis = np.concatenate([primary_statement, j], axis=0)
         else:
             vis = j
-        print(vis.shape)
         vis = crop_white_margin(vis)
-        print(vis.shape)
         result_images.append((i + 1, cnt, cv2_to_base64(vis)))
     
     return result_images
