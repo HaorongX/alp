@@ -4,7 +4,6 @@ import os
 import datetime
 from app import extractqp, extractms, db
 import re
-import base64
 from app.cv2base64 import base64_to_binary
 
 upload_bp = Blueprint('upload', __name__)
