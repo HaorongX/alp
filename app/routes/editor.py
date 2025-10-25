@@ -13,7 +13,7 @@ def edit_category():
     db = get_db()
     cursor = db.cursor()
 
-    args = jsonify(request.data.decode('utf-8'))
+    args = request.json
     cursor.execute(f"UPDATE QUESTIONTOPICS SET topic_id = ? WHERE question_id = ?", (args["topicid"], args["qid"]))
     db.commit()
     print(f"UPDATE QUESTIONTOPICS SET topic_id = ? WHERE question_id = ?", (args["topicid"], args["qid"]))
