@@ -1,80 +1,59 @@
-import re
-import cv2
-from pytesseract import image_to_string
+import requests
 import json
-import sys
-import os
-import sqlite3
-from denoise import denoise
+import re
+import unicodedata
+from nltk.corpus import stopwords
+import nltk
+from sklearn.preprocessing import LabelEncoder
 
-keywords = json.load(open('9618_keywords.json'))
-TOPICS = {}
-for i in keywords.keys():
-    TOPICS[i] = []
-    for j in keywords[i].keys():
-        for k in keywords[i][j]:
-            TOPICS[i].append(k)
+def clean_string(text):
+    cleaned_text = ''.join(ch for ch in text if unicodedata.category(ch)[0] != 'C') # Remove control characters
+    cleaned_text = re.sub(r'\s+', ' ', cleaned_text).strip() # Merge multiple spaces and strip leading/trailing whitespace
+    cleaned_text = re.sub(r'\(\s*[a-z]+\s*\)', '', cleaned_text) # Question number
+    cleaned_text = re.sub(r'^\d+', '', cleaned_text) # remove leading question numbers
+    cleaned_text = cleaned_text.replace('.', '') # Remove any dot
+    cleaned_text = re.sub(r'([a-z])([A-Z])', r'\1 \2', cleaned_text)  # add missing spaces
+    cleaned_text = re.sub(r'\[\s*\d+\s*\]', '', cleaned_text) # mark worth
+    cleaned_text = re.sub(r'\s+', ' ', cleaned_text)
+    cleaned_text = re.sub(r' - ', ' ', cleaned_text) # isolate dash
+    cleaned_text = cleaned_text.lower()
+    try:
+        stop_words = stopwords.words('english')
+        cleaned_text = ' '.join(word for word in cleaned_text.split(' ') if word not in stop_words)
+    except LookupError:
+        nltk.download('stopwords')
+        stop_words = stopwords.words('english')
+        cleaned_text = ' '.join(word for word in cleaned_text.split(' ') if word not in stop_words)
+    return cleaned_text
 
-def get_ocr_text(image):
-    return denoise(image)
+def stemm_text(text):
+    global stemm_text
+    text = ' '.join(stemmer.stem(word) for word in text.split(' '))
+    return text
 
-def choose_topic():
-    print("\nAvailable Topics:")
-    topic_list = list(TOPICS.keys())
-    for i, topic in enumerate(topic_list):
-        print(f"{i+1}. {topic}")
-    
-    topic_idx = int(input("Choose a topic (number): ")) - 1
-    topic = topic_list[topic_idx]
+def ocr(base64_img):
+    payload={
+        'language': 'eng',
+        'isOverlayRequired': 'false',
+        'iscreatesearchablepdf': 'false',
+        'issearchablepdfhidetextlayer': 'false',
+        'isTable': 'true',
+        'OCREngine': '2',
+        'base64Image': 'data:image/png;base64,'
+    }
+    url = config["OCRendPoint"]
+    headers = { 'apikey': config["OCRkey"] }
+    payload['base64Image'] += base64_img
+    response = requests.request("POST", url, headers=headers, data=payload)
+    return clean_string(json.loads(response.text, strict = False)["ParsedResults"][0]["ParsedText"])
 
-    print(f"\nAvailable Subtopics for {topic}:")
-    subtopics = TOPICS[topic]
-    for j, sub in enumerate(subtopics):
-        print(f"{j+1}. {sub}")
-    
-    subtopic_idx = int(input("Choose a subtopic (number) (type -1 to choose another topic): ")) - 1
-    if subtopic_idx == -2:
-        return choose_topic()
-    subtopic = subtopics[subtopic_idx]
+def __init__():
+    global config
+    global stemmer
+    stemmer = nltk.SnowballStemmer("english")
+    config = json.load(open("config.json"))
 
-    return topic, subtopic
-
-def label_dataset(image_dir, connect, cursor):
-    qp_name = re.search(r"9618_[sw]\d{2}_qp_\d{2}", sys.argv[1]).group(0)
-    if qp_name[-2] == '1' or qp_name[-2] == '2':
-        AS = True
-    else:
-        AS = False
-    for root, _, files in os.walk(image_dir):
-        for file in files:
-            filepath = os.path.join(root, file)
-
-            image = cv2.imread(filepath)
-            question = get_ocr_text(image)
-
-            found = False
-            for i in keywords.keys():
-                for j in keywords[i].keys():
-                    if (j == 'AS_Level' and AS == False) or (j != 'AS_Level' and AS == True):
-                        continue
-                    for k in keywords[i][j]:
-                        for keyword in keywords[i][j][k]:
-                            if question.find(keyword.lower()) != -1:
-                                topic = i
-                                subtopic = k
-                                found = True
-                                break
-            if not found:
-                print(f"\nLabeling: {filepath}")
-                cv2.imwrite("current.png", image)
-                topic, subtopic = choose_topic()
-            # topic_id = cursor.execute("SELECT topic_id FROM TOPICS WHERE main_topic_name = ? AND sub_topic_name = ?", (topic, subtopic)).fetchone()[0]
-            # question_id = cursor.execute("SELECT question_id FROM QUESTIONS WHERE paper_id = ? AND primary_index = ? AND secondary_index = ?", (qp_name, file[:-4].split('_')[0], file[:-4].split('_')[1])).fetchone()[0]
-            # cursor.execute("INSERT INTO QUESTIONTOPICS (question_id, topic_id) VALUES (?, ?)", (question_id, topic_id))
-
-if __name__ == "__main__":
-    connect = sqlite3.connect("db/9618.db")
-    cursor = connect.cursor()
-    image_dir = sys.argv[1]
-    label_dataset(image_dir, connect, cursor)
-    connect.commit()
+__init__()
+with open("./sample_data.txt", "r") as f:
+    sample = f.read()
+print(stemm_text(ocr(sample)))
