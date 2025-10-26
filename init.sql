@@ -40,7 +40,8 @@ CREATE TABLE QUESTIONS (
                             NOT NULL,
     image           BLOB    NOT NULL,
     primary_index   INTEGER NOT NULL,
-    secondary_index INTEGER NOT NULL
+    secondary_index INTEGER NOT NULL,
+    content         TEXT
 );
 
 CREATE TABLE MARKSCHEMES (
