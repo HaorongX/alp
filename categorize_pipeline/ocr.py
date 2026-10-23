@@ -4,14 +4,15 @@ import re
 import unicodedata
 from nltk.corpus import stopwords
 import nltk
-from sklearn.preprocessing import LabelEncoder
 
 def clean_string(text):
+    cleaned_text = text.encode('ascii', 'ignore').decode('ascii') # Remove unicode character
     cleaned_text = ''.join(ch for ch in text if unicodedata.category(ch)[0] != 'C') # Remove control characters
     cleaned_text = re.sub(r'\s+', ' ', cleaned_text).strip() # Merge multiple spaces and strip leading/trailing whitespace
     cleaned_text = re.sub(r'\(\s*[a-z]+\s*\)', '', cleaned_text) # Question number
     cleaned_text = re.sub(r'^\d+', '', cleaned_text) # remove leading question numbers
     cleaned_text = cleaned_text.replace('.', '') # Remove any dot
+    cleaned_text = cleaned_text.replace('•', '')
     cleaned_text = re.sub(r'([a-z])([A-Z])', r'\1 \2', cleaned_text)  # add missing spaces
     cleaned_text = re.sub(r'\[\s*\d+\s*\]', '', cleaned_text) # mark worth
     cleaned_text = re.sub(r'\s+', ' ', cleaned_text)
@@ -44,16 +45,19 @@ def ocr(base64_img):
     url = config["OCRendPoint"]
     headers = { 'apikey': config["OCRkey"] }
     payload['base64Image'] += base64_img
-    response = requests.request("POST", url, headers=headers, data=payload)
-    return clean_string(json.loads(response.text, strict = False)["ParsedResults"][0]["ParsedText"])
+    while True:
+        response = requests.request("POST", url, headers=headers, data=payload)
+        if response.status_code == 200:
+            break
+        print("Error: http status code", response.status_code, "retrying...")
+    try:
+        return clean_string(json.loads(response.text, strict = False)["ParsedResults"][0]["ParsedText"])
+    except:
+        print("an error has occured. Response text:", response.text)
+        return ""
 
 def __init__():
     global config
     global stemmer
     stemmer = nltk.SnowballStemmer("english")
     config = json.load(open("config.json"))
-
-__init__()
-with open("./sample_data.txt", "r") as f:
-    sample = f.read()
-print(stemm_text(ocr(sample)))

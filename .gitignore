@@ -11,3 +11,5 @@ integrated.html
 .vscode
 config.json
 sample_data.txt
+*.pkl
+training_data.csv
